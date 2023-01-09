@@ -1,0 +1,18 @@
+{% block content %}
+
+<a href="/study-group/{{group.groupId}}">{{group.groupName}}</a> <br><br><br>
+
+[스터디장]
+{{group.groupLeader}} <br><br>
+
+[스터디원]
+{% for member in members %}        
+    <form action="/group/member?_method=DELETE" method="post">
+        {{member.email}}
+        <input type="hidden" name="email" value="{{member.email}}">
+        <input type="hidden" name="groupId" value="{{group.groupId}}">
+        <button type="submit">스터디 탈퇴하기</button>
+    </form>
+{% endfor %}
+
+{% endblock %}
