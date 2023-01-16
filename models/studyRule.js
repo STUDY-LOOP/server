@@ -3,18 +3,13 @@ const Sequelize = require('sequelize');
 module.exports = class StudyRule extends Sequelize.Model{
     static init(sequelize){
         return super.init({
-            groupId: {
-                type: Sequelize.STRING,
-                allowNull: true,
-                unique: true,
-            },
             rule: {
                 type: Sequelize.TEXT,
                 allowNull: false,
             },
         }, {
             sequelize,
-            timestamps: true,
+            timestamps: false,
             underscored: false,
             modelName: 'StudyRule',
             tableName: 'studyrules',
@@ -25,10 +20,10 @@ module.exports = class StudyRule extends Sequelize.Model{
     }
 
     static associate(db){
-        db.StudyRule.hasOne(db.StudyGroup)
-        // db.StudyRule.belongsTo(db.StudyGroup, {
-        //     foreignKey: 'groupId',
-        //     sourceKey: 'groupId',
-        // })
+        db.StudyRule.belongsTo(db.StudyGroup, {
+            foreignKey: 'groupId',
+            targetKey: 'groupId',
+            onDelete: 'cascade',
+        });
     }
 };

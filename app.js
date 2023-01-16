@@ -11,12 +11,14 @@ const methodOverride = require('method-override');
 dotenv.config();
 const pageRouter = require('./routes/page');
 const studyGroupRouter = require('./routes/studyGroup');
+const studyGroupPageRouter = require('./routes/studyGroupPage');
+const userRouter = require('./routes/user');
+const userPageRouter = require('./routes/userPage');
+
 
 const { sequelize } = require('./models');
-//const passportConfig = require('./passport');
 
 const app = express();
-//passportConfig(); // 패스포트 설정
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'html');
 nunjucks.configure('views', {
@@ -48,8 +50,12 @@ app.use(session({
 }));
 app.use(methodOverride('_method'));
 
-app.use('/', pageRouter);
+
 app.use('/group', studyGroupRouter);
+app.use('/study-group', studyGroupPageRouter);
+app.use('/user', userRouter);
+app.use('/my', userPageRouter);
+app.use('/', pageRouter);
 
 app.use((req, res, next) => {
 	const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

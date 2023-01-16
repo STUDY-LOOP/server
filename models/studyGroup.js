@@ -34,24 +34,23 @@ module.exports = class StudyGroup extends Sequelize.Model{
         db.StudyGroup.belongsTo(db.User, {
             foreignKey: 'groupLeader',
             targetKey: 'email',
-            //onDelete: 'cascade',
-            //onUpdate: 'cascade',
         });
         // 스터디:스터디원 = N:M
         db.StudyGroup.belongsToMany(db.User, {
-            through: 'GroupMember',
-            foreignKey: 'groupId',
+            through: 'StudyMember',
+            timestamps: false,
         });
         // 스터디:규칙 = 1:1
-        db.StudyGroup.hasOne(db.StudyRule)
-        // db.StudyGroup.hasOne(db.studyRule, {
-        //     foreignKey: 'groupId',
-        //     sourceKey: 'groupId',
-        // });
+        db.StudyGroup.hasOne(db.StudyRule, {
+            foreignKey: 'groupId',
+            sourceKey: 'groupId',
+            onDelete: 'cascade',
+        });
         // 스터디:스터디일정 = 1:N
         db.StudyGroup.hasMany(db.StudySchedule, {
             foreignKey: 'groupId',
             sourceKey: 'groupId',
+            onDelete: 'cascade',
         });
     }
 };

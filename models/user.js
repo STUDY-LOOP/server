@@ -1,5 +1,5 @@
+/* 작업용 임시 파일 */
 const Sequelize = require('sequelize');
-//const { toDefaultValue } = require('sequelize/types/utils');
 
 module.exports = class User extends Sequelize.Model{
     static init(sequelize){
@@ -31,8 +31,7 @@ module.exports = class User extends Sequelize.Model{
 
     static associate(db){
         db.User.belongsToMany(db.StudyGroup, {
-            through: 'GroupMember',
-            foreignKey: 'email',
+            through: 'StudyMember',
         });
     }
 };

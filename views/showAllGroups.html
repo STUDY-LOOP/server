@@ -1,14 +1,7 @@
 {% block content %}
 <div class="study-groups">
 	{% for group in groups %}
-	<!-- <h3><a href="/study-group/{{group.groupId}}">{{group.groupName}}</a></h3> -->
-
-	<form id="study_form" method="post" action="/study-group/home">
-		<input type="hidden" name="groupId" value="{{group.groupId}}">
-		<button type="submit">{{group.groupName}}</button>
-		<!-- <a href="javascript:{}" onclick="document.getElementById('study_form').submit();">{{group.groupName}}</a> -->
-	</form>
-	
+		<h3><a href="/study-group/{{group.groupId}}">{{group.groupName}}</a></h3>
 	{% endfor %}
 </div>
 

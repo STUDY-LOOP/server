@@ -21,7 +21,7 @@ module.exports = class StudySchedule extends Sequelize.Model{
             }
         }, {
             sequelize,
-            timestamps: true,
+            timestamps: false,
             underscored: false,
             modelName: 'StudySchedule',
             tableName: 'studySchedules',
@@ -35,6 +35,7 @@ module.exports = class StudySchedule extends Sequelize.Model{
         db.StudySchedule.belongsTo(db.StudyGroup, {
             foreignKey: 'groupId',
             sourceKey: 'groupId',
+            onDelete: 'cascade',
         });
     }
 };

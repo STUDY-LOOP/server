@@ -8,15 +8,18 @@
     <h3>스터디장: {{group.groupLeader}}</h3>
 
     <p>
-        {{rule.rule}} <br>
-        {{schedule.scheduleDay}}, {{schedule.scheduleHour}}:{{schedule.scheduleMinute}}
+        {{group.StudyRule.rule}} <br>
+
+        {% for schedule in group.StudySchedules %}
+            {{schedule.scheduleDay}}, {{schedule.scheduleHour}}:{{schedule.scheduleMinute}} <br>
+	    {% endfor %}
     </p>
 </div>
 
 <div>
-    [스터디원]
+    [스터디원]<br>
     {% for member in members %}
-        <p>{{member.email}}</p>
+        {{member.nick}} <br>
 	{% endfor %}
 </div>
 

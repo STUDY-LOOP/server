@@ -1,0 +1,24 @@
+{% block content %}
+<a href="/">메인 페이지</a> <br>
+<a href="/study-groups">스터디 목록</a> <br>
+
+<div>
+	<h3>내 정보</h3>
+	{{myProfile.email}}
+</div>
+
+<div>
+	<h3>내가 가입한 스터디</h3>
+	{% for member in asMember.StudyGroups %}
+		<p><a href="/study-group/{{member.groupId}}">{{member.groupName}}</a></p>
+	{% endfor %}
+</div>
+
+<div>
+	<h3>내가 만든 스터디</h3>
+	{% for leader in asLeader %}
+		<p><a href="/study-group/{{leader.groupId}}">{{leader.groupName}}</a></p>
+	{% endfor %}
+</div>
+
+{% endblock %}

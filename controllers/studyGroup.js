@@ -1,15 +1,15 @@
-const { StudyGroup, StudyMember, StudyRule, StudySchedule, User } = require('../models');
+const { sequelize, StudyGroup, StudyRule, StudySchedule, User } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 
-// 진행: 완료
 // 스터디 생성
 exports.create = async (req, res, next) => {
 	const { groupName, groupLeader, rule, scheduleDay, scheduleHour, scheduleMinute } = req.body;
 	groupId = uuidv4();
 	try {
+		// 사용자 DB 연결 후 수정 필요
 		await User.create({
 			email: groupLeader,
-			nick: 'jinseo',
+			nick: groupLeader,
 			password: 'password',
 		});
 		await StudyGroup.create({
@@ -35,20 +35,17 @@ exports.create = async (req, res, next) => {
 	}
 }
 
-// 진행: 완료
 // 스터디 가입
 exports.join = async (req, res, next) => {
 	const { userName, groupId } = req.body;
 	try {
-		await User.create({
+		const group = await StudyGroup.findOne({ where: { groupId: groupId } });
+		const user = await User.create({
 			email: userName,
 			nick: userName,
 			password: 'password',
 		});
-		await StudyMember.create({
-			groupId,
-			email: userName,
-		});
+		await group.addUser(user);
 		return res.redirect('/study-group/'+groupId);
 	} catch(error) {
 		console.error(error);
@@ -56,15 +53,15 @@ exports.join = async (req, res, next) => {
 	}
 }
 
-// 진행: 완료
 // 스터디 탈퇴
 exports.quit = async (req, res, next) => {
 	const { email, groupId } = req.body;
+	const userId = await User.findOne({ where: {email}, attributes: ['id'] });
 	try{
-		await StudyMember.destroy({
+		await sequelize.models.StudyMember.destroy({
 			where: { 
-				groupId,
-				email,
+				StudyGroupGroupId: groupId,
+				UserId: userId.id,
 			}
 		});
 		return res.redirect('/study-group/'+groupId);
@@ -74,7 +71,6 @@ exports.quit = async (req, res, next) => {
 	}
 }
 
-// 진행: 완료
 // 스터디 설정 변경
 exports.modify = async (req, res, next) => {
 	const { 
@@ -83,7 +79,7 @@ exports.modify = async (req, res, next) => {
 	} = req.body;
 
 	try {
-		///////////////////// 테이블 구조 바꿔야.. 하나...? 같이 삭제되도록
+		///////////////////// 심플하게 수정 필요
 		await StudyGroup.update(
 			{ groupId, groupName, groupLeader },
 			{ where: { groupId: groupId} },
@@ -104,24 +100,12 @@ exports.modify = async (req, res, next) => {
 	}
 }
 
-// 진행: 거의 완료 (시퀄라이즈 수정해서 DB 연동해야함)
+
 // 스터디 삭제
 exports.remove = async (req, res, next) => {
 	const { groupId } = req.body;
-	///////////////////// 이거 db 연결해놓으면 하나만 지워도 다 지워질듯 (디비수정필요)
 	try{
-		await StudyGroup.destroy({
-			where: { groupId: groupId }
-		});
-		await StudyMember.destroy({
-			where: { groupId: groupId }
-		});
-		await StudyRule.destroy({
-			where: { groupId: groupId }
-		});
-		await StudySchedule.destroy({
-			where: { groupId: groupId }
-		});
+		await StudyGroup.destroy({ where: { groupId: groupId } });
 		return res.redirect('/study-groups');
 	}catch(error){
 		console.error(error);
