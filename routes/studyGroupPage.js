@@ -5,6 +5,7 @@ const {
     renderStudyMain, 
     renderStudySetting, 
     renderStudyMember,
+    renderVideoChat,
 } = require('../controllers/studyGroupPage');
 
 
@@ -22,5 +23,9 @@ router.get('/:groupId/setting', renderStudySetting);
 // GET /study-group/:groupId/member (스터디원 정보 페이지)
 router.get('/:groupId/member', renderStudyMember);
 
+// POST /study-group/videoChat (화상채팅)
+//router.post('/videoChat', renderVideoChat);
+// GET /study-group/:groupId/videoChat (화상채팅)
+router.get('/:groupId/videoChat', renderVideoChat);
 
 module.exports = router;

@@ -76,3 +76,27 @@ exports.renderStudyMember = async (req, res, next) => {
 		return next(error);
 	}
 };
+
+
+exports.renderVideoChat = async (req, res, next) => {
+	//const { groupId, nickname } = req.body;
+	const groupId = req.params.groupId;
+	const nickname = 'jinseo';
+
+	try{
+		const group = await StudyGroup.findOne({
+			where: { groupId: groupId }
+		});
+
+		console.log(groupId, nickname);
+		return res.render('videoChat', {
+			title: '스터디원 정보',
+			group, 
+			//nickname: 세션에서 값 받아오기
+			nickname: nickname,
+		});
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+};

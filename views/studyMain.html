@@ -37,4 +37,12 @@
 
 <a href="/study-group/{{group.groupId}}/member">회원 관리</a>
 
+<!-- <form action="/study-group/videoChat" method="post">
+    <input type="hidden" value="{{group.groupId}}" name="groupId">
+    nickname: <input type="text" name="nickname">
+    <button type="submit">화상회의</button>
+</form> -->
+
+<a href="/study-group/{{group.groupId}}/videoChat">화상회의</a>
+
 {% endblock %}
