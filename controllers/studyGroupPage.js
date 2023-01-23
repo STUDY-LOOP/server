@@ -1,4 +1,4 @@
-const { sequelize, User, StudyGroup, StudyRule, StudySchedule } = require('../models');
+const { sequelize, User, StudyGroup, StudyRule, StudySchedule, Assignment, StudyLog } = require('../models');
 
 
 exports.renderCreateGroup = (req, res, next) => {
@@ -7,12 +7,12 @@ exports.renderCreateGroup = (req, res, next) => {
 
 
 exports.renderStudyMain = async (req, res, next) => {
-	try{
+	try {
 		const groupId = req.params.groupId;
 
 		const group = await StudyGroup.findOne({
 			where: { groupId: groupId },
-			attributes: [ 'groupId', 'groupName', 'groupLeader' ],
+			attributes: ['groupId', 'groupName', 'groupLeader'],
 			include: [
 				{ model: StudyRule, attributes: ['rule'], },
 				{ model: StudySchedule, attributes: ['scheduleDay', 'scheduleHour', 'scheduleMinute'], }
@@ -25,7 +25,7 @@ exports.renderStudyMain = async (req, res, next) => {
 			title: '스터디 홈',
 			group, members,
 		});
-	}catch(error){
+	} catch (error) {
 		console.error(error);
 		return next(error);
 	}
@@ -33,24 +33,24 @@ exports.renderStudyMain = async (req, res, next) => {
 
 
 exports.renderStudySetting = async (req, res, next) => {
-	try{
+	try {
 		const group = await StudyGroup.findOne({
-			where: { groupId: req.params.groupId } 
+			where: { groupId: req.params.groupId }
 		});
-		const rules = await StudyRule.findOne({ 
-			where: { groupId: req.params.groupId } 
+		const rules = await StudyRule.findOne({
+			where: { groupId: req.params.groupId }
 		});
-		const schedules = await StudySchedule.findAll({ 
-			where: { groupId: req.params.groupId } 
+		const schedules = await StudySchedule.findAll({
+			where: { groupId: req.params.groupId }
 		});
 
 		return res.render('studySetting', {
 			title: '스터디 설정',
-			group, 
-			rules, 
+			group,
+			rules,
 			schedules,
 		});
-	}catch(error){
+	} catch (error) {
 		console.error(error);
 		return next(error);
 	}
@@ -59,7 +59,7 @@ exports.renderStudySetting = async (req, res, next) => {
 
 exports.renderStudyMember = async (req, res, next) => {
 	const groupId = req.params.groupId;
-	try{
+	try {
 		const group = await StudyGroup.findOne({
 			where: { groupId: groupId }
 		});
@@ -71,7 +71,7 @@ exports.renderStudyMember = async (req, res, next) => {
 			group,
 			members,
 		});
-	}catch(error){
+	} catch (error) {
 		console.error(error);
 		return next(error);
 	}
@@ -83,7 +83,7 @@ exports.renderVideoChat = async (req, res, next) => {
 	const groupId = req.params.groupId;
 	const nickname = 'jinseo';
 
-	try{
+	try {
 		const group = await StudyGroup.findOne({
 			where: { groupId: groupId }
 		});
@@ -91,11 +91,44 @@ exports.renderVideoChat = async (req, res, next) => {
 		console.log(groupId, nickname);
 		return res.render('videoChat', {
 			title: '스터디원 정보',
-			group, 
+			group,
 			//nickname: 세션에서 값 받아오기
 			nickname: nickname,
 		});
-	}catch(error){
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
+
+
+exports.renderAssignment = async (req, res, next) => {
+	const groupId = req.params.groupId;
+	try {
+		// 그룹 정보
+		const group = await StudyGroup.findOne({
+			where: { groupId: groupId },
+			attributes: ['groupName', 'groupId'],
+		});
+		// 제출한 과제 내역
+		const filelist = await Assignment.findAll({
+			where: { groupId: groupId },
+			attributes: ['uploader', 'log', 'filename', 'fileOrigin', 'linkData'],
+			include: [{
+				model: User,
+				attributes: ['nick'],
+			}],			
+		});
+
+		//console.log(filelist);
+		//console.log(JSON.stringify(filelist));
+
+		return res.render('studyAssignment', {
+			title: '과제함',
+			group,
+			filelist,
+		});
+	} catch (error) {
 		console.error(error);
 		return next(error);
 	}

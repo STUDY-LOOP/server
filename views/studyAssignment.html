@@ -1,0 +1,30 @@
+{% block content %}
+<a href="/study-group/{{group.groupId}}">스터디 홈</a> <br>
+
+<form id="form" action="/group/assignment" method="post" enctype="multipart/form-data">
+    <input type="hidden" value="{{group.groupId}}" name="groupId">
+    <input type="hidden" value="홍진서" name="uploader">
+    <input type="input" name="log">
+
+    <input type="file" name="fileData">
+    <button type="submit">과제 제출</button>
+</form>
+
+<div>
+    <ul>
+    {% for file in filelist %}
+        <!-- <li><a href="/group/{{group.groupId}}/{{file.filepath}}" download>{{file.filepath}}</a> (제출자: {{file.uploader}})</li> -->
+        <li>
+            <a href="/group/download/{{file.filename}}" download>{{file.fileOrigin}}</a> (제출자: {{file.uploader}}) 
+
+            <form action="/group/assignment?_method=DELETE" method="post">
+                <input type="hidden" value="{{file.filename}}" name="filename">
+                <input type="hidden" value="{{group.groupId}}" name="groupId">
+                <button type="submit">삭제</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

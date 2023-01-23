@@ -6,6 +6,7 @@ const {
     renderStudySetting, 
     renderStudyMember,
     renderVideoChat,
+    renderAssignment,
 } = require('../controllers/studyGroupPage');
 
 
@@ -27,5 +28,8 @@ router.get('/:groupId/member', renderStudyMember);
 //router.post('/videoChat', renderVideoChat);
 // GET /study-group/:groupId/videoChat (화상채팅)
 router.get('/:groupId/videoChat', renderVideoChat);
+
+// GET /study-group/:groupId/assignment (과제함)
+router.get('/:groupId/assignment', renderAssignment);
 
 module.exports = router;

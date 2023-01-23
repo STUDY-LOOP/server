@@ -1,5 +1,6 @@
-const { sequelize, StudyGroup, StudyRule, StudySchedule, User } = require('../models');
+const { sequelize, StudyGroup, StudyRule, StudySchedule, StudyLog, User, Assignment } = require('../models');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 
 // 스터디 생성
 exports.create = async (req, res, next) => {
@@ -29,7 +30,6 @@ exports.create = async (req, res, next) => {
 		});        
 		return res.redirect('/study-group/'+groupId);
 	} catch(error) {
-		//console.log("ERROR!");
 		console.error(error);
 		return next(error);
 	}
@@ -107,6 +107,66 @@ exports.remove = async (req, res, next) => {
 	try{
 		await StudyGroup.destroy({ where: { groupId: groupId } });
 		return res.redirect('/study-groups');
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+}
+
+
+// 과제 제출
+exports.submitAssignment = async (req, res, next) => {
+	try{
+		const { groupId, uploader, log } = req.body;
+		const filename = `${req.file.filename}`;
+		const fileOrigin = `${req.file.originalname}`;
+
+		await StudyLog.findOrCreate({
+			where: {
+				groupId,
+				log,
+			}
+		});
+		await Assignment.create({
+			groupId,
+			uploader,
+			log: parseInt(log),
+			filename,
+			fileOrigin,
+		});
+
+		return res.redirect('/study-group/'+groupId+'/assignment');
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+}
+
+// 과제 다운로드
+exports.getAssignment = async (req, res, next) => {
+	const filename = req.params.filename;
+	const filepath = `${__dirname}\\..\\public\\uploads\\${filename}`
+	try{
+		const file = await Assignment.findOne({ where: { filename } });
+		const fileOrigin = file.fileOrigin;
+		res.download(filepath, fileOrigin);
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+}
+
+// 과제 삭제
+exports.deleteAssignment = async (req, res, next) => {
+	const { filename, groupId } = req.body;
+	const filepath = `${__dirname}\\..\\public\\uploads\\${filename}`
+	try{
+		// db에서 관련 데이터 삭제
+		await Assignment.destroy({ where: { filename } });
+		// 실제 파일 삭제
+		fs.unlink(filepath, err => { if (err) throw err; });
+		
+		return res.redirect('/study-group/'+groupId+'/assignment');
 	}catch(error){
 		console.error(error);
 		return next(error);

@@ -52,5 +52,17 @@ module.exports = class StudyGroup extends Sequelize.Model{
             sourceKey: 'groupId',
             onDelete: 'cascade',
         });
+        // 스터디:세부내역 = 1:1
+        db.StudyGroup.hasMany(db.StudyRule, {
+            foreignKey: 'groupId',
+            sourceKey: 'groupId',
+            onDelete: 'cascade',
+        });
+        // 스터디:과제 = 1:N
+        db.StudyGroup.hasMany(db.Assignment, {
+            foreignKey: 'groupId',
+            sourceKey: 'groupId',
+            onDelete: 'cascade',
+        });
     }
 };
