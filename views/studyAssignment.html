@@ -1,30 +1,53 @@
 {% block content %}
 <a href="/study-group/{{group.groupId}}">스터디 홈</a> <br>
 
-<form id="form" action="/group/assignment" method="post" enctype="multipart/form-data">
-    <input type="hidden" value="{{group.groupId}}" name="groupId">
-    <input type="hidden" value="홍진서" name="uploader">
-    <input type="input" name="log">
+<form id="form" action="/group/assignmentBox" method="post">
+    <input type="hidden" value="{{group.groupId}}" name="groupId"> <br>   
+    log <input type="input" name="log"> <br>
+    title <input type="input" name="title"> <br>
+    content <input type="input" name="content"> <br>
+    deadline <input type="input" name="deadline"> <br>
 
-    <input type="file" name="fileData">
-    <button type="submit">과제 제출</button>
+    <button type="submit">과제함 생성</button>
 </form>
 
 <div>
-    <ul>
-    {% for file in filelist %}
-        <!-- <li><a href="/group/{{group.groupId}}/{{file.filepath}}" download>{{file.filepath}}</a> (제출자: {{file.uploader}})</li> -->
-        <li>
-            <a href="/group/download/{{file.filename}}" download>{{file.fileOrigin}}</a> (제출자: {{file.uploader}}) 
+    {% for box in boxlist %}
+        <hr>
+        {{box.title}}<br>
+        {{box.content}}
 
-            <form action="/group/assignment?_method=DELETE" method="post">
-                <input type="hidden" value="{{file.filename}}" name="filename">
+        <ul style="background-color: lavender; width: fit-content">
+        {% for file in box.Assignments %}
+            <li>
+                <a href="/group/download/{{file.filename}}" download>{{file.fileOrigin}}</a> (제출자: {{file.uploader}}) 
+
+                <form action="/group/assignment?_method=DELETE" method="post">
+                    <input type="hidden" value="{{file.filename}}" name="filename">
+                    <input type="hidden" value="{{group.groupId}}" name="groupId">
+                    <button type="submit">삭제</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+
+        <div style="background-color: lightskyblue; width: fit-content">
+            <form id="form" action="/group/assignment" method="post" enctype="multipart/form-data">
                 <input type="hidden" value="{{group.groupId}}" name="groupId">
-                <button type="submit">삭제</button>
+                <input type="hidden" value="{{box.boxId}}" name="boxId">
+                <input type="hidden" value="홍진서" name="uploader">
+            
+                <input type="file" name="fileData">
+                <button type="submit">과제 제출</button>
             </form>
-        </li>
+        </div>
+
+        <form action="/group/assignmentBox?_method=DELETE" method="post">
+            <input type="hidden" value="{{group.groupId}}" name="groupId">
+            <input type="hidden" value="{{box.boxId}}" name="boxId">
+            <button type="submit">과제함 삭제</button>
+        </form>
     {% endfor %}
-    </ul>
 </div>
 
 {% endblock %}

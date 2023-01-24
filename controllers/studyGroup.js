@@ -1,4 +1,4 @@
-const { sequelize, StudyGroup, StudyRule, StudySchedule, StudyLog, User, Assignment } = require('../models');
+const { sequelize, StudyGroup, StudyRule, StudySchedule, StudyLog, User, AssignmentBox, Assignment } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
@@ -114,12 +114,13 @@ exports.remove = async (req, res, next) => {
 }
 
 
-// 과제 제출
-exports.submitAssignment = async (req, res, next) => {
+/* 과제함 */
+
+// 과제함 생성
+exports.createBox = async (req, res, next) => {
 	try{
-		const { groupId, uploader, log } = req.body;
-		const filename = `${req.file.filename}`;
-		const fileOrigin = `${req.file.originalname}`;
+		const { groupId, log, title, content, deadline } = req.body;
+		const boxId = uuidv4();
 
 		await StudyLog.findOrCreate({
 			where: {
@@ -127,10 +128,46 @@ exports.submitAssignment = async (req, res, next) => {
 				log,
 			}
 		});
-		await Assignment.create({
-			groupId,
-			uploader,
+
+		await AssignmentBox.create({
+			groupId, 
 			log: parseInt(log),
+			boxId, 
+			title, 
+			content, 
+			deadline: null,
+		});
+
+		return res.redirect('/study-group/'+groupId+'/assignment');
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+}
+
+// 과제함 삭제
+exports.deleteBox = async (req, res, next) => {
+	try{
+		const { boxId, groupId } = req.body;
+		await AssignmentBox.destroy({ where: { boxId } });
+		
+		return res.redirect('/study-group/'+groupId+'/assignment');
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+}
+
+// 과제 제출
+exports.submitAssignment = async (req, res, next) => {
+	try{
+		const { groupId, boxId, uploader } = req.body;
+		const filename = `${req.file.filename}`;
+		const fileOrigin = `${req.file.originalname}`;
+
+		await Assignment.create({
+			boxId,
+			uploader,
 			filename,
 			fileOrigin,
 		});

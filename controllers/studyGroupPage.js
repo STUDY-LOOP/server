@@ -1,4 +1,4 @@
-const { sequelize, User, StudyGroup, StudyRule, StudySchedule, Assignment, StudyLog } = require('../models');
+const { sequelize, User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog } = require('../models');
 
 
 exports.renderCreateGroup = (req, res, next) => {
@@ -110,23 +110,22 @@ exports.renderAssignment = async (req, res, next) => {
 			where: { groupId: groupId },
 			attributes: ['groupName', 'groupId'],
 		});
+
 		// 제출한 과제 내역
-		const filelist = await Assignment.findAll({
+		const boxlist = await AssignmentBox.findAll({
 			where: { groupId: groupId },
-			attributes: ['uploader', 'log', 'filename', 'fileOrigin', 'linkData'],
-			include: [{
-				model: User,
-				attributes: ['nick'],
+			attributes: ['groupId', 'boxId', 'title', 'content', 'deadline'],
+			include: [{ 
+				model: Assignment, 
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'] ,
+				include: [{ model: User, attributes: ['nick'] }],
 			}],			
 		});
-
-		//console.log(filelist);
-		//console.log(JSON.stringify(filelist));
 
 		return res.render('studyAssignment', {
 			title: '과제함',
 			group,
-			filelist,
+			boxlist,
 		});
 	} catch (error) {
 		console.error(error);

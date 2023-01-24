@@ -5,6 +5,7 @@ const studyGroup = require('./studyGroup');
 const studySchedule = require('./studySchedule');
 const studyRule = require('./studyRule');
 const studyLog = require('./studyLog');
+const assignmentBox = require('./assignmentBox');
 const assignment = require('./assignment');
 const user = require('./user');
 
@@ -18,6 +19,7 @@ db.StudyGroup = studyGroup;
 db.StudySchedule = studySchedule;
 db.StudyRule = studyRule;
 db.StudyLog = studyLog;
+db.AssignmentBox = assignmentBox;
 db.Assignment = assignment;
 db.User = user;
 
@@ -25,6 +27,7 @@ studyGroup.init(sequelize);
 studySchedule.init(sequelize);
 studyRule.init(sequelize);
 studyLog.init(sequelize);
+assignmentBox.init(sequelize);
 assignment.init(sequelize);
 user.init(sequelize);
 
@@ -32,6 +35,7 @@ studyGroup.associate(db);
 studySchedule.associate(db);
 studyRule.associate(db);
 studyLog.associate(db);
+assignmentBox.associate(db);
 assignment.associate(db);
 user.associate(db);
 

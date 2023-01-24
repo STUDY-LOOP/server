@@ -3,16 +3,12 @@ const Sequelize = require('sequelize');
 module.exports = class Assignment extends Sequelize.Model{
     static init(sequelize){
         return super.init({
-            groupId: {
+            boxId: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
             uploader: {
                 type: Sequelize.STRING(40),
-                allowNull: false,
-            },
-            log: {
-                type: Sequelize.INTEGER,
                 allowNull: false,
             },
             filename: {
@@ -27,9 +23,14 @@ module.exports = class Assignment extends Sequelize.Model{
                 type: Sequelize.STRING,
                 allowNull: true,
             },
+            submittedOn: {
+                type: Sequelize.DATE,
+                allowNull: true,
+                defaultValue: Sequelize.fn('now'),
+            },
         }, {
             sequelize,
-            timestamps: true,
+            timestamps: false,
             underscored: false,
             modelName: 'Assignment',
             tableName: 'assignments',
@@ -41,21 +42,15 @@ module.exports = class Assignment extends Sequelize.Model{
 
     static associate(db){
         // foreignKey: 스터디그룹 id
-        db.Assignment.belongsTo(db.StudyGroup, {
-            foreignKey: 'groupId',
-            sourceKey: 'groupId',
+        db.Assignment.belongsTo(db.AssignmentBox, {
+            foreignKey: 'boxId',
+            sourceKey: 'boxId',
             onDelete: 'cascade',
         });
         // 제출자:사용자 = N:1
         db.Assignment.belongsTo(db.User, {
             foreignKey: 'uploader',
             targetKey: 'email',
-        });
-        // foreignKey: 스터디 세부내역 log
-        db.Assignment.belongsTo(db.StudyLog, {
-            foreignKey: 'log',
-            sourceKey: 'log',
-            onDelete: 'cascade',
         });
     }
 };
