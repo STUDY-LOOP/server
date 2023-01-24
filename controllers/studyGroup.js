@@ -10,7 +10,7 @@ exports.create = async (req, res, next) => {
 		// 사용자 DB 연결 후 수정 필요
 		await User.create({
 			email: groupLeader,
-			nick: groupLeader,
+			userNick: groupLeader,
 			password: 'password',
 		});
 		await StudyGroup.create({
@@ -42,7 +42,7 @@ exports.join = async (req, res, next) => {
 		const group = await StudyGroup.findOne({ where: { groupId: groupId } });
 		const user = await User.create({
 			email: userName,
-			nick: userName,
+			userNick: userName,
 			password: 'password',
 		});
 		await group.addUser(user);

@@ -118,7 +118,7 @@ exports.renderAssignment = async (req, res, next) => {
 			include: [{ 
 				model: Assignment, 
 				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'] ,
-				include: [{ model: User, attributes: ['nick'] }],
+				include: [{ model: User, attributes: ['userNick'] }],
 			}],			
 		});
 
