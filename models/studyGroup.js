@@ -58,8 +58,8 @@ module.exports = class StudyGroup extends Sequelize.Model{
             sourceKey: 'groupId',
             onDelete: 'cascade',
         });
-        // 스터디:과제 = 1:N
-        db.StudyGroup.hasMany(db.Assignment, {
+        // 스터디:과제함 = 1:N
+        db.StudyGroup.hasMany(db.AssignmentBox, {
             foreignKey: 'groupId',
             sourceKey: 'groupId',
             onDelete: 'cascade',

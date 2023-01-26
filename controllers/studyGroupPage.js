@@ -60,16 +60,22 @@ exports.renderStudySetting = async (req, res, next) => {
 exports.renderStudyMember = async (req, res, next) => {
 	const groupId = req.params.groupId;
 	try {
-		const group = await StudyGroup.findOne({
-			where: { groupId: groupId }
-		});
-
+		const group = await StudyGroup.findOne({ where: { groupId: groupId } });
 		const members = await group.getUsers();
+		const boxlist = await group.getAssignmentBoxes({
+			attributes: ['boxId', 'title'],
+			include: [{  
+				model: Assignment, 
+				attributes: ['uploader'],
+				include: [{ model: User, attributes: ['userNick'] }],
+			}],
+		});
 
 		return res.render('studyMember', {
 			title: '스터디원 정보',
 			group,
 			members,
+			boxlist,
 		});
 	} catch (error) {
 		console.error(error);
@@ -111,7 +117,7 @@ exports.renderAssignment = async (req, res, next) => {
 			attributes: ['groupName', 'groupId'],
 		});
 
-		// 제출한 과제 내역
+		// 제출한 과제 파일
 		const boxlist = await AssignmentBox.findAll({
 			where: { groupId: groupId },
 			attributes: ['groupId', 'boxId', 'title', 'content', 'deadline'],

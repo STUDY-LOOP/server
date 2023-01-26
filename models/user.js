@@ -33,5 +33,10 @@ module.exports = class User extends Sequelize.Model{
         db.User.belongsToMany(db.StudyGroup, {
             through: 'StudyMember',
         });
+        db.User.hasMany(db.Assignment, {
+            foreignKey: 'uploader',
+            sourceKey: 'email',
+            onDelete: 'cascade',
+        });
     }
 };

@@ -12,11 +12,13 @@
 </form>
 
 <div>
+    <!-- 과제함 -->
     {% for box in boxlist %}
         <hr>
         {{box.title}}<br>
         {{box.content}}
 
+        <!-- 제출한 과제 목록 -->
         <ul style="background-color: lavender; width: fit-content">
         {% for file in box.Assignments %}
             <li>
@@ -31,6 +33,7 @@
         {% endfor %}
         </ul>
 
+        <!-- 과제 제출 기능 -->
         <div style="background-color: lightskyblue; width: fit-content">
             <form id="form" action="/group/assignment" method="post" enctype="multipart/form-data">
                 <input type="hidden" value="{{group.groupId}}" name="groupId">
@@ -42,6 +45,7 @@
             </form>
         </div>
 
+        <!-- 과제함 삭제 -->
         <form action="/group/assignmentBox?_method=DELETE" method="post">
             <input type="hidden" value="{{group.groupId}}" name="groupId">
             <input type="hidden" value="{{box.boxId}}" name="boxId">

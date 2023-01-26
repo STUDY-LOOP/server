@@ -21,4 +21,9 @@
 	{% endfor %}
 </div>
 
+<form action="/my/assignment" method="post">
+    <input type="hidden" value="{{myProfile.email}}" name="myId">
+    <button type="submit">내 과제함</button>
+</form>
+
 {% endblock %}

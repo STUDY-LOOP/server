@@ -12,6 +12,7 @@ const router = express.Router();
 router.post('/profile', renderMyProfile);
 
 // GET /my/assignment
-router.get('/assignment', renderMyAssignment);
+// 나중에 get으로 수정 (데이터는 세션에서 가져옴)
+router.post('/assignment', renderMyAssignment);
 
 module.exports = router;
