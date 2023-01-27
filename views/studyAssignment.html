@@ -1,8 +1,8 @@
 {% block content %}
-<a href="/study-group/{{group.groupId}}">스터디 홈</a> <br>
+<a href="/study-group/{{groupPublicId}}">스터디 홈</a> <br>
 
 <form id="form" action="/group/assignmentBox" method="post">
-    <input type="hidden" value="{{group.groupId}}" name="groupId"> <br>   
+    <input type="hidden" value="{{groupPublicId}}" name="gpId"> <br>   
     log <input type="input" name="log"> <br>
     title <input type="input" name="title"> <br>
     content <input type="input" name="content"> <br>
@@ -26,7 +26,7 @@
 
                 <form action="/group/assignment?_method=DELETE" method="post">
                     <input type="hidden" value="{{file.filename}}" name="filename">
-                    <input type="hidden" value="{{group.groupId}}" name="groupId">
+                    <input type="hidden" value="{{groupPublicId}}" name="gpId">
                     <button type="submit">삭제</button>
                 </form>
             </li>
@@ -36,7 +36,7 @@
         <!-- 과제 제출 기능 -->
         <div style="background-color: lightskyblue; width: fit-content">
             <form id="form" action="/group/assignment" method="post" enctype="multipart/form-data">
-                <input type="hidden" value="{{group.groupId}}" name="groupId">
+                <input type="hidden" value="{{groupPublicId}}" name="gpId">
                 <input type="hidden" value="{{box.boxId}}" name="boxId">
                 <input type="hidden" value="홍진서" name="uploader">
             
@@ -47,7 +47,7 @@
 
         <!-- 과제함 삭제 -->
         <form action="/group/assignmentBox?_method=DELETE" method="post">
-            <input type="hidden" value="{{group.groupId}}" name="groupId">
+            <input type="hidden" value="{{groupPublicId}}" name="gpId">
             <input type="hidden" value="{{box.boxId}}" name="boxId">
             <button type="submit">과제함 삭제</button>
         </form>

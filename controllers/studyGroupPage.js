@@ -1,4 +1,6 @@
 const { sequelize, User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog } = require('../models');
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 
 exports.renderCreateGroup = (req, res, next) => {
@@ -8,10 +10,19 @@ exports.renderCreateGroup = (req, res, next) => {
 
 exports.renderStudyMain = async (req, res, next) => {
 	try {
-		const groupId = req.params.groupId;
+		//const groupId = req.params.groupId;
+		const groupPublicId = req.params.groupPublicId;
+		const values = groupPublicId.split('=');
+
+		const group_dev = await StudyGroup.findOne({ 
+			where: {
+				groupName: values[0],
+				groupId: { [Op.like]: values[1] + "%" },
+			}
+		});
 
 		const group = await StudyGroup.findOne({
-			where: { groupId: groupId },
+			where: { groupId: group_dev.groupId },
 			attributes: ['groupId', 'groupName', 'groupLeader'],
 			include: [
 				{ model: StudyRule, attributes: ['rule'], },
@@ -19,10 +30,11 @@ exports.renderStudyMain = async (req, res, next) => {
 			],
 		});
 
-		const members = await group.getUsers();
+		const members = await group_dev.getUsers({ attributes: ['userNick'] });
 
 		return res.render('studyMain', {
 			title: '스터디 홈',
+			groupPublicId,
 			group, members,
 		});
 	} catch (error) {
@@ -34,21 +46,34 @@ exports.renderStudyMain = async (req, res, next) => {
 
 exports.renderStudySetting = async (req, res, next) => {
 	try {
-		const group = await StudyGroup.findOne({
-			where: { groupId: req.params.groupId }
+		const groupPublicId = req.params.groupPublicId;
+		const values = groupPublicId.split('=');
+
+		const group_dev = await StudyGroup.findOne({ 
+			where: {
+				groupName: values[0],
+				groupId: { [Op.like]: values[1] + "%" },
+			}
+		});
+		///////////////////// 심플하게 수정 필요
+		const group = await StudyGroup.findOne({ 
+			where: { groupId: group_dev.groupId },
+			attributes: ['groupName', 'groupLeader'],
 		});
 		const rules = await StudyRule.findOne({
-			where: { groupId: req.params.groupId }
+			where: { groupId: group_dev.groupId },
+			attributes: ['rule'],
 		});
 		const schedules = await StudySchedule.findAll({
-			where: { groupId: req.params.groupId }
+			where: { groupId: group_dev.groupId },
+			attributes: ['scheduleDay', 'scheduleHour', 'scheduleMinute'],
 		});
+		///////////////////// 심플하게 수정 필요
 
 		return res.render('studySetting', {
 			title: '스터디 설정',
-			group,
-			rules,
-			schedules,
+			group, rules, schedules, 
+			groupPublicId,
 		});
 	} catch (error) {
 		console.error(error);
@@ -58,11 +83,27 @@ exports.renderStudySetting = async (req, res, next) => {
 
 
 exports.renderStudyMember = async (req, res, next) => {
-	const groupId = req.params.groupId;
 	try {
-		const group = await StudyGroup.findOne({ where: { groupId: groupId } });
-		const members = await group.getUsers();
-		const boxlist = await group.getAssignmentBoxes({
+		const groupPublicId = req.params.groupPublicId;
+		const values = groupPublicId.split('=');
+
+		const group_dev = await StudyGroup.findOne({ 
+			where: {
+				groupName: values[0],
+				groupId: { [Op.like]: values[1] + "%" },
+			},
+		}); 
+
+		const group = await StudyGroup.findOne({ 
+			where: { groupId: group_dev.groupId },
+			attributes: ['groupName', 'groupLeader'],
+		});
+
+		const members = await group_dev.getUsers({
+			attributes: ['userNick', 'email'],
+		});
+
+		const boxlist = await group_dev.getAssignmentBoxes({
 			attributes: ['boxId', 'title'],
 			include: [{  
 				model: Assignment, 
@@ -76,6 +117,7 @@ exports.renderStudyMember = async (req, res, next) => {
 			group,
 			members,
 			boxlist,
+			groupPublicId,
 		});
 	} catch (error) {
 		console.error(error);
@@ -111,16 +153,27 @@ exports.renderVideoChat = async (req, res, next) => {
 exports.renderAssignment = async (req, res, next) => {
 	const groupId = req.params.groupId;
 	try {
+		const groupPublicId = req.params.groupPublicId;
+		const values = groupPublicId.split('=');
+
+		const group_dev = await StudyGroup.findOne({ 
+			where: {
+				groupName: values[0],
+				groupId: { [Op.like]: values[1] + "%" },
+			},
+			attributes: ['groupId'],
+		})
+
 		// 그룹 정보
-		const group = await StudyGroup.findOne({
-			where: { groupId: groupId },
-			attributes: ['groupName', 'groupId'],
+		const group = await StudyGroup.findOne({ 
+			where: { groupId: group_dev.groupId },
+			attributes: ['groupName'],
 		});
 
 		// 제출한 과제 파일
 		const boxlist = await AssignmentBox.findAll({
-			where: { groupId: groupId },
-			attributes: ['groupId', 'boxId', 'title', 'content', 'deadline'],
+			where: { groupId: group_dev.groupId },
+			attributes: ['boxId', 'title', 'content', 'deadline'],
 			include: [{ 
 				model: Assignment, 
 				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'] ,
@@ -132,6 +185,7 @@ exports.renderAssignment = async (req, res, next) => {
 			title: '과제함',
 			group,
 			boxlist,
+			groupPublicId,
 		});
 	} catch (error) {
 		console.error(error);

@@ -1,6 +1,6 @@
 {% block content %}
 
-<a href="/study-group/{{group.groupId}}">{{group.groupName}}</a> <br><br><br>
+<a href="/study-group/{{groupPublicId}}">{{group.groupName}}</a> <br><br><br>
 
 [스터디장]
 {{group.groupLeader}} <br><br>
@@ -11,7 +11,7 @@
         <form action="/group/member?_method=DELETE" method="post">
             {{member.userNick}}
             <input type="hidden" name="email" value="{{member.email}}">
-            <input type="hidden" name="groupId" value="{{group.groupId}}">
+            <input type="hidden" name="gpId" value="{{groupPublicId}}">
             <button type="submit">스터디 탈퇴하기</button>
         </form>
     {% endfor %}

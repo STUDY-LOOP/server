@@ -1,8 +1,8 @@
 {% block content %}
 
-<form action="/group/{{group.groupId}}/setting?_method=PUT" method="post">
+<form action="/group/{{groupPublicId}}/setting?_method=PUT" method="post">
     <div>
-        <input type="hidden" name="groupId" value="{{group.groupId}}">
+        <input type="hidden" name="gpId" value="{{groupPublicId}}">
         스터디명 <input type="text" name="groupName" value="{{group.groupName}}"> <br>
 
         스터디장 <input type="text" name="groupLeader" value="{{group.groupLeader}}"> <br>
@@ -59,8 +59,8 @@
     </div>
 </form>
 
-<form action="/group/{{group.groupId}}/setting?_method=DELETE" method="post">
-    <input type="hidden" name="groupId" value="{{group.groupId}}">
+<form action="/group/{{groupPublicId}}/setting?_method=DELETE" method="post">
+    <input type="hidden" name="gpId" value="{{groupPublicId}}">
     <button type="submit">스터디 삭제</button>
 </form>
 

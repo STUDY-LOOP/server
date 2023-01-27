@@ -16,20 +16,21 @@ const router = express.Router();
 router.get('/', renderCreateGroup);
 
 // GET /study-group/:groupId (스터디 홈 페이지)
-router.get('/:groupId', renderStudyMain);
+//router.get('/:groupId', renderStudyMain);
+router.get('/:groupPublicId', renderStudyMain);
 
 // GET /study-group/:groupId/setting (스터디 설정 페이지)
-router.get('/:groupId/setting', renderStudySetting);
+router.get('/:groupPublicId/setting', renderStudySetting);
 
 // GET /study-group/:groupId/member (스터디원 정보 페이지)
-router.get('/:groupId/member', renderStudyMember);
+router.get('/:groupPublicId/member', renderStudyMember);
 
 // POST /study-group/videoChat (화상채팅)
 //router.post('/videoChat', renderVideoChat);
 // GET /study-group/:groupId/videoChat (화상채팅)
-router.get('/:groupId/videoChat', renderVideoChat);
+router.get('/:groupPublicId/videoChat', renderVideoChat);
 
 // GET /study-group/:groupId/assignment (과제함)
-router.get('/:groupId/assignment', renderAssignment);
+router.get('/:groupPublicId/assignment', renderAssignment);
 
 module.exports = router;

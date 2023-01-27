@@ -8,12 +8,16 @@ exports.renderMain = (req, res) => {
 
 exports.renderShowAllGroups = async (req, res, next) => {
 	try{
-		const result = await StudyGroup.findAll({
-			//attributes:['groupName']
-		});
+		const result = await StudyGroup.findAll({ attributes:['groupName', 'groupId'] });
+		let gpId = JSON.parse(JSON.stringify(result));	// 깊은복사
+
+		for (let i=0; i<gpId.length; i++){
+			gpId[i].groupId = gpId[i].groupId.substr(0, 7);
+		}
+
 		return res.render('showAllGroups', {
 			title: '스터디 목록',
-			groups: result,
+			groupPublicId: gpId,
 		});
 	}catch(error){
 		console.error(error);
