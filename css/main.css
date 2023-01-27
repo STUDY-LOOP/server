@@ -1,0 +1,51 @@
+.container {
+    margin-top: 50px;
+}
+
+#calendar {
+    float: left;
+    width: 60%;
+    height: 100%; 
+}
+
+#chatRoom{
+    float: right;
+    width: 300px;
+    height: 400px;
+}
+
+span {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+#chatEnter{
+    grid-column: 2 / 4;
+    grid-row: 2 / 3;
+}
+
+input { 
+    width: 230px;
+    padding: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 3px;
+}
+.btn { 
+    width: 50px;
+    background-color:lightsalmon;
+    padding: 3px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin: 3px;
+    border-style: hidden;
+}
+
+#video-chat {
+    width: 40px;
+    height: 20%;
+}
+
+
+
