@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{title}}</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="profile-wrap">
+        <div class="profile">
+          {% if user and user.id %}
+          <div class="user-name">{{'안녕하세요! ' + user.userNick + '님'}}</div>
+          <div class="study-info">
+            <div>참여중인 스터디</div>
+            <div class="count participating-count">
+              {{participatingCount + '개'}}
+            </div>
+          </div>
+          <input id="my-id" type="hidden" value="{{user.id}}" />
+          <a id="my-profile" href="/myPage" class="btn">마이페이지</a>
+          <a id="logout" href="/auth/logout" class="btn">로그아웃</a>
+          {% else %}
+          <form id="login-form" action="/auth/login" method="post">
+            <div class="input-group">
+              <label for="email">이메일</label>
+              <input id="email" type="email" name="email" required autofocus />
+            </div>
+            <div class="input-group">
+              <label for="password">비밀번호</label>
+              <input id="password" type="password" name="password" required />
+            </div>
+            <a id="join" href="/join" class="btn">회원가입</a>
+            <button id="login" type="submit" class="btn">로그인</button>
+          </form>
+          {% endif %}
+        </div>
+        <footer>
+          Made by&nbsp;
+          <a
+            href="https://github.com/capstone-design-cse/studyWithMe"
+            target="_blank"
+            >Team12</a
+          >
+        </footer>
+      </div>
+      {% block content %} {% endblock %}
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      window.onload = () => {
+        if (new URL(location.href).searchParams.get('loginError')) {
+          alert(new URL(location.href).searchParams.get('loginError'));
+        }
+      };
+    </script>
+    {% block script %} {% endblock %}
+  </body>
+</html>
