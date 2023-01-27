@@ -1,0 +1,25 @@
+{% block content %}
+<a href="/">메인 페이지</a> <br>
+<a href="/study-groups">스터디 목록</a> <br>
+
+<div>
+	<h3>내 정보</h3>
+	{{myId}}
+</div>
+
+<div>
+	<h3>내가 제출한 과제</h3>
+	{% for member in myAssignments %}
+		<p><a href="/study-group/{{member.groupId}}">{{member.groupName}}</a></p>
+	{% endfor %}
+
+    {% for file in myAssignments %}
+        <li>
+            <a href="/group/download/{{file.filename}}" download>{{file.fileOrigin}}</a> 
+             / <a href="/study-group/{{file.AssignmentBox.groupId}}">{{file.AssignmentBox.StudyGroup.groupName}}</a>
+        </li>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% block content %}
+<a href="/study-groups">스터디 목록</a> <br>
+
+<div>
+    <h1>{{group.groupName}}</h1>
+
+    <h3>스터디 아이디: {{groupPublicId}}</h3>
+    <h3>스터디장: {{group.groupLeader}}</h3>
+
+    <p>
+        {{group.StudyRule.rule}} <br>
+
+        {% for schedule in group.StudySchedules %}
+            {{schedule.scheduleDay}}, {{schedule.scheduleHour}}:{{schedule.scheduleMinute}} <br>
+	    {% endfor %}
+    </p>
+</div>
+
+<div>
+    [스터디원]<br>
+    {% for member in members %}
+        {{member.userNick}} <br>
+	{% endfor %}
+</div>
+
+<form action="/group/member" method="post">
+    <div>
+        <label for="enter-name">이름</label>
+        <input id="enter-name" type="text" name="userName">
+
+        <input type="hidden" value="{{groupPublicId}}" name="gpId">
+        <button type="submit">스터디 가입하기</button>
+    </div>
+</form>
+
+<button type="button" onClick="location.href='/study-group/{{groupPublicId}}/setting'">스터디 설정</button> <br>
+
+<a href="/study-group/{{groupPublicId}}/member">회원 관리</a>
+
+<!-- <form action="/study-group/videoChat" method="post">
+    <input type="hidden" value="{{groupPublicId}}" name="gpId">
+    nickname: <input type="text" name="nickname">
+    <button type="submit">화상회의</button>
+</form> -->
+
+<a href="/study-group/{{groupPublicId}}/videoChat">화상회의</a>
+
+<a href="/study-group/{{groupPublicId}}/assignment">과제함</a>
+
+{% endblock %}
