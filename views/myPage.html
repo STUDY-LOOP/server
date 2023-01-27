@@ -1,0 +1,21 @@
+{% extends 'layout.html' %} {% block content %}
+<div class="timeline">
+  <form id="edit-profile-form" action="/user/profile?_method=PUT" method="post">
+    <div class="my-info">
+      <h2>마이페이지</h2>
+      <p style="font-size: 10px">가입 이메일</p>
+      <p style="font-size: 15px">{{user.email}}</p>
+      <p style="font-size: 10px">닉네임</p>
+      <input
+        type="text"
+        name="newNick"
+        value="{{user.userNick}}"
+        style="font-size: 15px; background-color: #eae5e1"
+      />
+      <br />
+      <br />
+      <button id="edit-profile" type="submit" class="btn">수정하기</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
