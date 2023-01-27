@@ -1,0 +1,30 @@
+{% block script %}
+
+{% endblock %}
+
+
+{% block content %}
+<head>
+    <script>
+        const ROOM_ID = "{{ group.groupId }}" 
+        const NICKNAME = "{{ nickname }}"
+    </script> 
+
+    <script defer src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script defer src="/socket.io/socket.io.js"></script>
+    <script defer src="/js/videoChatScript.js"></script>
+</head>
+
+<body>
+    <header>
+        <h3 onclick="history.back()"> 스터디홈으로 돌아가기 </h3>
+    </header>
+
+    <div id="video-grid"></div>
+
+    <div id="setting-grid">
+        <button id="mute">Mute</button>
+        <button id="camera">Turn Camera Off</button>
+    </div>
+</body>
+{% endblock %}

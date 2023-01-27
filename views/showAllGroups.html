@@ -1,0 +1,15 @@
+{% block content %}
+<div class="study-groups">
+	{% for id in groupPublicId %}
+		<h3><a href="/study-group/{{id.groupName}}={{id.groupId}}">{{id.groupName}}</a></h3>
+	{% endfor %}
+</div>
+
+<br><br>
+
+<div>
+	<form action="/study-group" method="get">
+		<button type="submit">스터디 만들기</button>
+	</form>
+</div>
+{% endblock %}

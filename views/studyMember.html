@@ -1,0 +1,46 @@
+{% block content %}
+
+<a href="/study-group/{{groupPublicId}}">{{group.groupName}}</a> <br><br><br>
+
+[스터디장]
+{{group.groupLeader}} <br><br>
+
+<div>
+    [스터디원]
+    {% for member in members %}        
+        <form action="/group/member?_method=DELETE" method="post">
+            {{member.userNick}}
+            <input type="hidden" name="email" value="{{member.email}}">
+            <input type="hidden" name="gpId" value="{{groupPublicId}}">
+            <button type="submit">스터디 탈퇴하기</button>
+        </form>
+    {% endfor %}
+</div>
+
+<hr>
+
+<div>
+
+    {% for member in members %}  
+        <br><b>{{member.userNick}}</b><br>
+        {% for box in boxlist %}
+            {% set status = false %}
+            {{box.title}} :
+
+            {% for assignment in box.Assignments %}
+                {% if member.email === assignment.uploader %} {% set status = true %}
+                {% endif %}
+            {% endfor %}
+
+            {% if status %} 제출
+            {% else %} 미제출
+            {% endif %}
+
+            <br>
+        {% endfor %}
+    {% endfor %}
+
+    
+</div>
+
+{% endblock %}
