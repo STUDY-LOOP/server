@@ -14,7 +14,7 @@ exports.create = async (req, res, next) => {
 		await User.create({
 			email: groupLeader,
 			userNick: groupLeader,
-			password: 'password',
+			userPW: 'password',
 		});
 		await StudyGroup.create({
 			groupId,
@@ -55,7 +55,7 @@ exports.join = async (req, res, next) => {
 		const user = await User.create({
 			email: userName,
 			userNick: userName,
-			password: 'password',
+			userPW: 'password',
 		});
 		await group.addUser(user);;
 		return res.redirect(`/study-group/${gpId}`);
