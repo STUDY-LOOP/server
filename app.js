@@ -11,6 +11,7 @@ const passport = require('passport');
 const methodOverride = require('method-override');
 const fs = require('fs');
 const readFile = require('read-file');
+const { v4: uuidV4 } = require('uuid');
 
 const app = express();
 const server = require('http').Server(app);
@@ -24,8 +25,11 @@ dotenv.config();
 const pageRouter = require('./routes/page');
 const studyGroupRouter = require('./routes/studyGroup');
 const studyGroupPageRouter = require('./routes/studyGroupPage');
-const userRouter = require('./routes/user');
 const userPageRouter = require('./routes/userPage');
+
+//const indexRouter = require('./routes');
+const homeRouter = require('./routes/home');
+const eventsRouter = require('./routes/events');
 
 const { sequelize } = require('./models');
 
@@ -46,7 +50,6 @@ sequelize.sync({ force: false })
 
 
 app.use(morgan('dev'));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -54,18 +57,30 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false,
 	secret: process.env.COOKIE_SECRET,
+	//store: new MemoryStore(),
 	cookie: {
 		httpOnly: true,
 		secure: false,
 	},
 }));
 app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/test-page', express.static(path.join(__dirname, 'test-page')));
+app.use('/datetimepicker', express.static(path.join(__dirname, 'datetimepicker')));
+
 app.use('/peerjs', peerServer);
 
 
+
+/* 라우터 */
+app.use('/home', homeRouter);
+app.use('/events', eventsRouter);
+//app.use('/', indexRouter);
+
 app.use('/group', studyGroupRouter);
 app.use('/study-group', studyGroupPageRouter);
-app.use('/user', userRouter);
+//app.use('/user', userRouter);
 app.use('/my', userPageRouter);
 app.use('/', pageRouter);
 
@@ -88,6 +103,29 @@ app.use((err, req, res, next) => {
 /****** Chat, Video ******/
 
 io.on('connection', (socket) => {
+
+	//msg chat
+	socket['nickname'] = 'Anonymous';
+	socket.on('enter_chat_room', (chatRoomName, done) => {
+	  socket.join(chatRoomName);
+	  done();
+	});
+	socket.on('new_message', (msg, room, done) => {
+	  // connectDB.query(
+	  //   `INSERT INTO chat (room_id, u_id, notice, content, datetime) VALUES ('${studyRoomId}', '${Nickname}', 0, '${msg}', '${formattedDateTime}')`
+	  // );
+	  socket.to(room).emit('new_message', `${socket.nickname}: ${msg}`);
+	  done(); //triggers function located at frontend
+	});
+	socket.on('nickname', (nickname) => (socket['nickname'] = nickname));
+	socket.on('new_notice', (msg, room, done) => {
+	  // connectDB.query(
+	  //   `INSERT INTO chat (room_id, u_id, notice, content, datetime) VALUES ('${studyRoomId}', '${Nickname}', 1, '${msg}', '${formattedDateTime}')`
+	  // );
+	  socket.to(room).emit('new_notice', `NOTICE: ${msg}`);
+	  done();
+	});
+
 	//video chat
 	socket.on('join-room', (roomId, userId) => {
 		socket.join(roomId);

@@ -1,4 +1,4 @@
-const { sequelize, User, StudyGroup, StudyRule, StudySchedule, AssignmentBox } = require('../models/index1');
+const { sequelize, User, StudyGroup, StudyRule, StudySchedule, AssignmentBox } = require('../models');
 const func = require('../module/functions');
 
 exports.renderMyProfile = async (req, res, next) => {
