@@ -1,10 +1,11 @@
 const passport = require('passport');
 const local = require('./localStrategy');
-const User = require('../models/user1');
+const User = require('../models/user');
 
 module.exports = () => {
   passport.serializeUser((user, done) => {
-    done(null, user.id); // 세션에 user의 id만 저장
+    //세션//done(null, user.id); // 세션에 user의 id만 저장
+    done(null, user.email); // 세션에 user의 email만 저장
   });
 
   passport.deserializeUser((id, done) => {

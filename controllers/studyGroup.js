@@ -5,17 +5,15 @@ const fs = require('fs');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
+
+/* --- 스터디 기본 --- */
+
 // 스터디 생성
 exports.create = async (req, res, next) => {
-	const { groupName, groupLeader, rule, scheduleDay, scheduleHour, scheduleMinute } = req.body;
+	const { groupName, rule, scheduleDay, scheduleHour, scheduleMinute } = req.body;
 	const groupId = uuidv4();
+	const groupLeader = req.session.passport.user;
 	try {
-		// 사용자 DB 연결 후 수정 필요
-		await User.create({
-			email: groupLeader,
-			userNick: groupLeader,
-			userPW: 'password',
-		});
 		await StudyGroup.create({
 			groupId,
 			groupName,
@@ -43,7 +41,7 @@ exports.create = async (req, res, next) => {
 // 스터디 가입
 exports.join = async (req, res, next) => {
 	try {
-		const { userName, gpId } = req.body;
+		const { gpId } = req.body;
 		const values = gpId.split('=');
 
 		const group = await StudyGroup.findOne({ 
@@ -52,11 +50,7 @@ exports.join = async (req, res, next) => {
 				groupId: { [Op.like]: values[1] + "%" }
 			},	
 		});
-		const user = await User.create({
-			email: userName,
-			userNick: userName,
-			userPW: 'password',
-		});
+		const user = await User.findOne({ where: { email: req.session.passport.user } });
 		await group.addUser(user);;
 		return res.redirect(`/study-group/${gpId}`);
 	} catch(error) {
@@ -68,10 +62,11 @@ exports.join = async (req, res, next) => {
 // 스터디 탈퇴
 exports.quit = async (req, res, next) => {
 	try{
-		const { email, gpId } = req.body;
+		const { memberEmail, gpId } = req.body;
 		const values = gpId.split('=');
 
-		const userId = await User.findOne({ where: {email}, attributes: ['id'] });
+		//const userId = await User.findOne({ where: {email: req.session.passport.user}, attributes: ['id'] });
+		const userId = await User.findOne({ where: {email: memberEmail}, attributes: ['id'] });
 		const group = await StudyGroup.findOne({
 			where: {
 				groupName: values[0],
@@ -83,6 +78,8 @@ exports.quit = async (req, res, next) => {
 			where: { 
 				StudyGroupGroupId: group.groupId,
 				UserId: userId.id,
+				// 나중에 '나만 탈퇴하기 기능' 추가되면 아래 코드로 수정
+				//email: string(req.session.passport.user),
 			}
 		});
 		return res.redirect(`/study-group/${gpId}`);
@@ -145,7 +142,7 @@ exports.remove = async (req, res, next) => {
 				groupId: { [Op.like]: values[1] + "%" },
 			} 
 		});
-		return res.redirect('/study-groups');
+		return res.redirect('/');
 	}catch(error){
 		console.error(error);
 		return next(error);
@@ -153,7 +150,7 @@ exports.remove = async (req, res, next) => {
 }
 
 
-/* 과제함 */
+/* --- 과제함 --- */
 
 // 과제함 생성
 exports.createBox = async (req, res, next) => {
@@ -203,7 +200,8 @@ exports.deleteBox = async (req, res, next) => {
 // 과제 제출
 exports.submitAssignment = async (req, res, next) => {
 	try{
-		const { gpId, boxId, uploader } = req.body;
+		const { gpId, boxId } = req.body;
+		const uploader = req.session.passport.user;
 		const filename = `${req.file.filename}`;
 		const fileOrigin = `${req.file.originalname}`;
 

@@ -1,4 +1,4 @@
-const { sequelize, User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog } = require('../models');
+const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -10,7 +10,6 @@ exports.renderCreateGroup = (req, res, next) => {
 
 exports.renderStudyMain = async (req, res, next) => {
 	try {
-		//const groupId = req.params.groupId;
 		const groupPublicId = req.params.groupPublicId;
 		const values = groupPublicId.split('=');
 
@@ -97,6 +96,10 @@ exports.renderStudyMember = async (req, res, next) => {
 		const group = await StudyGroup.findOne({ 
 			where: { groupId: group_dev.groupId },
 			attributes: ['groupName', 'groupLeader'],
+			include: [{
+				model: User, 
+				attributes: ['email', 'userNick'],
+			}]
 		});
 
 		const members = await group_dev.getUsers({
@@ -127,20 +130,19 @@ exports.renderStudyMember = async (req, res, next) => {
 
 
 exports.renderVideoChat = async (req, res, next) => {
-	//const { groupId, nickname } = req.body;
 	const groupId = req.params.groupId;
-	const nickname = 'jinseo';
+	const nickname = res.locals.user.nickname;
 
 	try {
 		const group = await StudyGroup.findOne({
 			where: { groupId: groupId }
 		});
 
-		console.log(groupId, nickname);
 		return res.render('videoChat', {
 			title: '스터디원 정보',
 			group,
 			//nickname: 세션에서 값 받아오기
+			//req.session.passport.user -> 세션에 저장된 email
 			nickname: nickname,
 		});
 	} catch (error) {

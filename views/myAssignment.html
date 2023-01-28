@@ -1,6 +1,5 @@
 {% block content %}
 <a href="/">메인 페이지</a> <br>
-<a href="/study-groups">스터디 목록</a> <br>
 
 <div>
 	<h3>내 정보</h3>
@@ -16,7 +15,7 @@
     {% for file in myAssignments %}
         <li>
             <a href="/group/download/{{file.filename}}" download>{{file.fileOrigin}}</a> 
-             / <a href="/study-group/{{file.AssignmentBox.groupId}}">{{file.AssignmentBox.StudyGroup.groupName}}</a>
+             / <a href="/study-group/{{file.AssignmentBox.StudyGroup.groupName}}={{file.AssignmentBox.groupId}}">{{file.AssignmentBox.StudyGroup.groupName}}</a>
         </li>
     {% endfor %}
 </div>

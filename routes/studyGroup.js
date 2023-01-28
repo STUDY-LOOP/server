@@ -3,7 +3,7 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 
-// const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
+const { isLoggedIn, isNotLoggedIn, isMemberOfGroup, isLeaderOfGroup } = require('../middlewares');
 const { 
     create, modify, remove,
 	join, quit,
@@ -12,7 +12,7 @@ const {
 } = require('../controllers/studyGroup');
 
 
-/* multer setting */
+/* --- multer setting --- */
 try {
 	fs.readdirSync('public/uploads');
 } catch (error) {
@@ -37,35 +37,47 @@ const upload = multer({
 
 const router = express.Router();
 
+router.use((req, res, next) => {
+	res.locals.user = req.user;
+	next();
+});
+
+
+
+/* --- 스터디그룹 --- */
+
 // POST /group (스터디 생성)
-router.post('/', create);
+router.post('/', isLoggedIn, create);
 
 // POST /group/member (스터디 가입)
-router.post('/member', join);
+router.post('/member', isLoggedIn, join);
 
 // DELETE /group/member (스터디 탈퇴)
-router.delete('/member', quit)
+router.delete('/member', isMemberOfGroup, quit)
 
-// PUT /group/:groupId/setting (특정 스터디 설정 변경)
-router.put('/:groupId/setting', modify);
+// PUT /group/:groupPublicId/setting (특정 스터디 설정 변경)
+router.put('/:groupPublicId/setting', isLeaderOfGroup, modify);
 
-// DELETE /group/:groupId/setting (특정 스터디 삭제)
-router.delete('/:groupId/setting', remove);
+// DELETE /group/:groupPublicId/setting (특정 스터디 삭제)
+router.delete('/:groupPublicId/setting', isLeaderOfGroup, remove);
 
+
+
+/* --- 과제 --- */
 
 // POST /group/assignmentBox (과제함 생성)
-router.post('/assignmentBox', createBox);
+router.post('/assignmentBox', isLeaderOfGroup, createBox);
 
 // DELETE /group/assignmentBox (과제함 삭제)
-router.delete('/assignmentBox', deleteBox);
+router.delete('/assignmentBox', isLeaderOfGroup, deleteBox);
 
 // POST /group/assignment (과제 제출)
-router.post('/assignment', upload.single('fileData'), submitAssignment);
+router.post('/assignment', isMemberOfGroup, upload.single('fileData'), submitAssignment);
 
 // GET /group/download/:filename (과제 다운로드)
-router.get('/download/:filename', getAssignment);
+router.get('/download/:filename', isMemberOfGroup, getAssignment);
 
 // DELETE /group/assignment (과제 삭제)
-router.delete('/assignment', deleteAssignment);
+router.delete('/assignment', isMemberOfGroup, deleteAssignment);
 
 module.exports = router;

@@ -1,10 +1,28 @@
+{% extends 'layout.html' %} 
+
 {% block content %}
+<div class="timeline">
+	{% if user %}
+	<p>로그인 성공</p>
+	{% endif %}
 
-<form action="/my/profile" method="post">
-    <div>
-        ID: <input type="text" name="myId">
-        <button type="submit">내 프로필</button>
-    </div>
-</form>
+	<div class="study-groups">
+		<h2>개설된 스터디</h2>
+		{% for id in groupPublicId %}
+			<h3><a href="/study-group/{{id.groupName}}={{id.groupId}}">{{id.groupName}}</a></h3>
+		{% endfor %}
+	</div>
+	
+	<br><br>
+	
+	{% if user %}
+	<div>
+		<form action="/study-group" method="get">
+			<button type="submit">스터디 만들기</button>
+		</form>
+	</div>
+	{% endif %}
 
+
+</div>
 {% endblock %}
