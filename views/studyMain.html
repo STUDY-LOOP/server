@@ -7,7 +7,7 @@
         media="print">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="../datetimepicker/jquery.datetimepicker.min.css" rel="stylesheet">
-    <link href="../css/main.css" rel="stylesheet">
+    <link href="../public/css/studyMain.css" rel="stylesheet">
 
     <script>
         const ROOM_ID = "{{ group.groupId }}" 
@@ -19,13 +19,13 @@
 </head>
 
 <body>
-    <a href="/study-groups">스터디 목록</a> <br>
+    <a href="/">메인화면</a> <br>
 
     <div>
-        <h1>{{group.groupName}}</h1>
+        <h3>{{group.groupName}}</h3>
 
-        <!-- <h3>스터디 아이디: {{groupPublicId}}</h3>
-        <h3>스터디장: {{group.groupLeader}}</h3>
+        <h4>스터디 아이디: {{groupPublicId}}</h4>
+        <h4>스터디장: {{group.groupLeader}}</h4>
 
         <p>
             {{group.StudyRule.rule}} <br>
@@ -33,17 +33,10 @@
             {% for schedule in group.StudySchedules %}
                 {{schedule.scheduleDay}}, {{schedule.scheduleHour}}:{{schedule.scheduleMinute}} <br>
             {% endfor %}
-        </p> -->
+        </p>
     </div>
 
-    <!-- <div>
-        [스터디원]<br>
-        {% for member in members %}
-            {{member.userNick}} <br>
-        {% endfor %}
-    </div> -->
-
-
+    
     <!-- 캘린더, 채팅 -->
     <div class="container">
         <div id="calendar"></div>
@@ -70,9 +63,6 @@
     <!-- 스터디 가입, 다른 페이지로 이동 -->
     <form action="/group/member" method="post">
         <div>
-            <label for="enter-name">이름</label>
-            <input id="enter-name" type="text" name="userName">
-
             <input type="hidden" value="{{groupPublicId}}" name="gpId">
             <button type="submit">스터디 가입하기</button>
         </div>
@@ -83,11 +73,6 @@
     <a href="/study-group/{{groupPublicId}}/member">회원 관리</a>
     <a href="/study-group/{{groupPublicId}}/assignment">과제함</a>
     <a href="/study-group/{{groupPublicId}}/videoChat">화상회의</a>
-    <!-- <form action="/study-group/videoChat" method="post">
-        <input type="hidden" value="{{groupPublicId}}" name="gpId">
-        nickname: <input type="text" name="nickname">
-        <button type="submit">화상회의</button>
-    </form> -->
 
     
     <!-- 지수  -->

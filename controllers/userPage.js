@@ -3,13 +3,7 @@ const func = require('../module/functions');
 
 exports.renderMyProfile = async (req, res, next) => {
 	try{
-		// const myId = req.params.myId;
-		const myId = req.body.myId;
-
-		////////////////// 나중에 삭제하기
-		if (myId === ''){
-			return res.render('myProfile');
-		};
+		const myId = req.session.passport.user;
 
 		const myProfile = await User.findOne({ 
 			where: { email: myId },
@@ -53,23 +47,26 @@ exports.renderMyProfile = async (req, res, next) => {
 };
 
 
-// 작업 필요
 exports.renderMyAssignment = async (req, res, next) => {
 	try{
-		const myId = req.body.myId;
+		const myId = req.session.passport.user;
 		const myProfile = await User.findOne({ where: { email: myId } });
 
-		const myAssignments = await myProfile.getAssignments({
+		const myAssignmentsTemp = await myProfile.getAssignments({
 			attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
 			include: [{  
 				model: AssignmentBox, 
 				attributes: ['boxId', 'groupId', 'title'],
-				include: [{ model: StudyGroup, attributes: ['groupId', 'groupName'] }],
+				include: [{ model: StudyGroup, attributes: ['groupName'] }],
 			}],
 		});
 
-		console.log("안녕하세요")
-		//console.log(myAssignments.AssignmentBox.StudyGroup.groupName);
+		let myAssignments = JSON.parse(JSON.stringify(myAssignmentsTemp));	// 깊은복사
+		console.log(myAssignments);
+
+		for (let i=0; i<myAssignments.length; i++){
+			myAssignments[i].AssignmentBox.groupId = myAssignments[i].AssignmentBox.groupId.substr(0, 7);
+		}
 
 		return res.render('myAssignment', {
 			title: '마이페이지 - 과제함',

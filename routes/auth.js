@@ -3,9 +3,13 @@ const passport = require('passport');
 
 const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 const { join, login, logout } = require('../controllers/auth');
-const { User } = require('../models');
 
 const router = express.Router();
+
+router.use((req, res, next) => {
+	res.locals.user = req.user;
+	next();
+});
 
 // POST /auth/join (회원가입)
 router.post('/join', isNotLoggedIn, join);

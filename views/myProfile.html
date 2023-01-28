@@ -1,29 +1,41 @@
+{% extends 'layout.html' %}
+
 {% block content %}
-<a href="/">메인 페이지</a> <br>
-<a href="/study-groups">스터디 목록</a> <br>
+<div class="timeline">
+	<div>
+		<h3>내 정보</h3>
+		{{myProfile.email}}
+	</div>
 
-<div>
-	<h3>내 정보</h3>
-	{{myProfile.email}}
+	<form id="edit-profile-form" action="/user/profile?_method=PUT" method="post">
+		<div class="my-info">
+			<h2>마이페이지</h2>
+			<p style="font-size: 10px">가입 이메일</p>
+			<p style="font-size: 15px">{{user.email}}</p>
+			<p style="font-size: 10px">닉네임</p>
+			<input type="text" name="newNick" value="{{user.userNick}}"
+				style="font-size: 15px; background-color: #eae5e1" />
+			<br />
+			<br />
+			<button id="edit-profile" type="submit" class="btn">수정하기</button>
+		</div>
+	</form><hr>
+
+	<div>
+		<h3>내가 가입한 스터디</h3>
+		{% for member in asMember.StudyGroups %}
+			<p><a href="/study-group/{{member.groupName}}={{member.groupId}}">{{member.groupName}}</a></p>
+		{% endfor %}
+	</div><hr>
+	
+	<div>
+		<h3>내가 만든 스터디</h3>
+		{% for leader in asLeader %}
+			<p><a href="/study-group/{{leader.groupName}}={{leader.groupId}}">{{leader.groupName}}</a></p>
+		{% endfor %}
+	</div><hr>
+
+	<a href="/my/assignment">내 과제함</a>
+
 </div>
-
-<div>
-	<h3>내가 가입한 스터디</h3>
-	{% for member in asMember.StudyGroups %}
-		<p><a href="/study-group/{{member.groupName}}={{member.groupId}}">{{member.groupName}}</a></p>
-	{% endfor %}
-</div>
-
-<div>
-	<h3>내가 만든 스터디</h3>
-	{% for leader in asLeader %}
-		<p><a href="/study-group/{{leader.groupName}}={{leader.groupId}}">{{leader.groupName}}</a></p>
-	{% endfor %}
-</div>
-
-<form action="/my/assignment" method="post">
-    <input type="hidden" value="{{myProfile.email}}" name="myId">
-    <button type="submit">내 과제함</button>
-</form>
-
 {% endblock %}

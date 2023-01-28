@@ -1,6 +1,6 @@
 const express = require('express');
 const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
-const { renderMyPage, renderJoin, renderMain } = require('../controllers/page');
+const { renderJoin, renderMain } = require('../controllers/page');
 
 const router = express.Router();
 
@@ -11,10 +11,11 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get('/myPage', isLoggedIn, renderMyPage);
 
-router.get('/join', isNotLoggedIn, renderJoin);
-
+// GET / (메인 페이지)
 router.get('/', renderMain);
+
+// GET / (회원가입)
+router.get('/join', isNotLoggedIn, renderJoin);
 
 module.exports = router;

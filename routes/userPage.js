@@ -1,5 +1,5 @@
 const express = require('express');
-// const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
+const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 const {
     renderMyProfile, 
     renderMyAssignment,
@@ -7,12 +7,15 @@ const {
 
 const router = express.Router();
 
-// GET /my/profile
-// 나중에 get으로 수정 (데이터는 세션에서 가져옴)
-router.post('/profile', renderMyProfile);
+router.use((req, res, next) => {
+	res.locals.user = req.user;
+	next();
+});
 
-// GET /my/assignment
-// 나중에 get으로 수정 (데이터는 세션에서 가져옴)
-router.post('/assignment', renderMyAssignment);
+// GET /my/profile (마이페이지)
+router.get('/profile', isLoggedIn, renderMyProfile);
+
+// GET /my/assignment (내 과제함)
+router.get('/assignment', isLoggedIn, renderMyAssignment);
 
 module.exports = router;
