@@ -8,8 +8,8 @@ module.exports = () => {
     done(null, user.email); // 세션에 user의 email만 저장
   });
 
-  passport.deserializeUser((id, done) => {
-    User.findOne({ where: { id } })
+  passport.deserializeUser((email, done) => {
+    User.findOne({ where: { email } })
       .then((user) => done(null, user))
       .catch((err) => done(err));
   });
