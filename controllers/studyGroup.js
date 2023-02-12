@@ -14,8 +14,10 @@ exports.create = async (req, res, next) => {
 	const groupId = uuidv4();
 	const groupLeader = req.session.passport.user;
 	try {
+		const groupPublicId = func.toPublicId(groupName, groupId);
 		await StudyGroup.create({
 			groupId,
+			groupPublicId,
 			groupName,
 			groupLeader,
 		});
@@ -29,9 +31,7 @@ exports.create = async (req, res, next) => {
 		    groupId,
 		    rule,
 		});
-
-		const gpId = func.toPublicId(groupName, groupId);
-		return res.redirect(`/study-group/${gpId}`);
+		return res.redirect(`/study-group/${groupPublicId}`);
 	} catch(error) {
 		console.error(error);
 		return next(error);
