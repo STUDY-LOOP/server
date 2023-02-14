@@ -72,7 +72,8 @@ router.post('/assignmentBox', isLeaderOfGroup, createBox);
 router.delete('/assignmentBox', isLeaderOfGroup, deleteBox);
 
 // POST /group/assignment (과제 제출)
-router.post('/assignment', isMemberOfGroup, upload.single('fileData'), submitAssignment);
+//router.post('/assignment', isMemberOfGroup, upload.single('fileData'), submitAssignment);
+router.post('/assignment', upload.single('fileData'), submitAssignment);
 
 // GET /group/download/:filename (과제 다운로드)
 router.get('/download/:filename', isMemberOfGroup, getAssignment);

@@ -2,6 +2,20 @@ const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, S
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
+exports.findAll = async (req, res, next) => {
+	try {
+		const studies = await StudyGroup.findAll({ 
+			attributes: ['groupPublicId', 'groupName', 'groupLeader'],
+		});
+
+		res.json(studies);
+
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+}
+
 exports.studyInfo = async (req, res, next) => {
 	try {
 		const groupPublicId = req.params.gpId;
@@ -28,9 +42,31 @@ exports.studyMemberInfo = async (req, res, next) => {
 		const groupPublicId = req.params.gpId;
 
 		const group = await StudyGroup.findOne({ where: { groupPublicId: groupPublicId } });
-		const members = await group.getUsers({ attributes: ['userNick'] });
+		const members = await group.getUsers({ attributes: ['userNick', 'email'] });
 
 		res.json(members);
+
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
+
+exports.studyAssignment = async (req, res, next) => {
+	try {
+		const groupPublicId = req.params.gpId;
+		const group_dev = await StudyGroup.findOne({ where: { groupPublicId } });
+
+		const boxlist = await group_dev.getAssignmentBoxes({
+			attributes: ['boxId', 'title'],
+			include: [{  
+				model: Assignment, 
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
+				include: [{ model: User, attributes: ['userNick'] }],
+			}],
+		});
+
+		res.json(boxlist);
 
 	} catch (error) {
 		console.error(error);
