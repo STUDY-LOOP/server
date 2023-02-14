@@ -9,6 +9,11 @@ module.exports = class StudyGroup extends Sequelize.Model{
                 unique: true,
                 primaryKey: true,
             },
+            groupPublicId: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                unique: true,
+            },
             groupName: {
                 type: Sequelize.STRING,
                 allowNull: false,

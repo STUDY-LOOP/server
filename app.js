@@ -9,8 +9,10 @@ const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const methodOverride = require('method-override');
+const cors = require('cors');
 
 dotenv.config();
+const apiRouter = require('./routes/api');
 const pageRouter = require('./routes/page');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
@@ -49,6 +51,7 @@ sequelize.sync({ force: false })
 	});
 
 
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -78,6 +81,7 @@ app.use('/peerjs', peerServer);
 /* --- router --- */
 
 app.use('/', pageRouter);
+app.use('/api', apiRouter);
 app.use('/events', eventsRouter);
 app.use('/auth', authRouter);
 app.use('/user', userRouter);

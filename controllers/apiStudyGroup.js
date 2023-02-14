@@ -12,7 +12,8 @@ const Op = Sequelize.Op;
 exports.create = async (req, res, next) => {
 	const { groupName, rule, scheduleDay, scheduleHour, scheduleMinute } = req.body;
 	const groupId = uuidv4();
-	const groupLeader = req.session.passport.user;
+	//const groupLeader = req.session.passport.user;
+	const groupLeader = "1@1";
 	try {
 		const groupPublicId = func.toPublicId(groupName, groupId);
 		await StudyGroup.create({
@@ -63,26 +64,21 @@ exports.join = async (req, res, next) => {
 exports.quit = async (req, res, next) => {
 	try{
 		const { memberEmail, gpId } = req.body;
-		const values = gpId.split('=');
 
-		//const userId = await User.findOne({ where: {email: req.session.passport.user}, attributes: ['id'] });
-		const userId = await User.findOne({ where: {email: memberEmail}, attributes: ['id'] });
+		const user = await User.findOne({ where: {email: memberEmail}, attributes: ['id'] });
 		const group = await StudyGroup.findOne({
-			where: {
-				groupName: values[0],
-				groupId: { [Op.like]: values[1] + "%" },
-			}
+			where: { groupPublicId: gpId }
 		});
 
 		await sequelize.models.StudyMember.destroy({
 			where: { 
 				StudyGroupGroupId: group.groupId,
-				UserId: userId.id,
+				UserId: user.id,
 				// 나중에 '나만 탈퇴하기 기능' 추가되면 아래 코드로 수정
 				//email: string(req.session.passport.user),
 			}
 		});
-		return res.redirect(`/study-group/${gpId}`);
+
 	}catch(error){
 		console.error(error);
 		return next(error);
@@ -200,10 +196,10 @@ exports.deleteBox = async (req, res, next) => {
 // 과제 제출
 exports.submitAssignment = async (req, res, next) => {
 	try{
-		const { gpId, boxId } = req.body;
-		const uploader = req.session.passport.user;
-		const filename = `${req.file.filename}`;
-		const fileOrigin = `${req.file.originalname}`;
+		const { gpId, boxId, uploader } = req.body;
+		//const uploader = req.session.passport.user;
+		const filename = `${req.filename}`;
+		const fileOrigin = `${req.originalname}`;
 
 		await Assignment.create({
 			boxId,

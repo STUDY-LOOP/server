@@ -35,11 +35,12 @@ exports.isLeaderOf = async function(email, publicId){
 
 // 사용자가 스터디 소속인지 확인
 exports.isMemberOf = async function(email, publicId){
-    const values = publicId.split('=');
+    //const values = publicId.split('=');
     const group_dev = await StudyGroup.findOne({ 
         where: {
-            groupName: values[0],
-            groupId: { [Op.like]: values[1] + "%" },
+            // groupName: values[0],
+            // groupId: { [Op.like]: values[1] + "%" },
+            groupPublicId: publicId
         }
     });
     const member = await group_dev.getUsers({ where: { email: email } });
