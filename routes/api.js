@@ -1,9 +1,13 @@
 const express = require('express');
+const passport = require('passport');
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
-const { findAll, studyInfo, studyMemberInfo, studyAssignment } = require('../controllers/api');
-const { create, quit, getAssignment, deleteAssignment, submitAssignment } = require('../controllers/apiStudyGroup');
+const { findAll, studyInfo, studyMemberInfo, studyAssignment, userInfo } = require('../controllers/api');
+const { create, quit, createBox, submitAssignment, getAssignment, deleteAssignment } = require('../controllers/apiStudyGroup');
+const { join, login, logout } = require('../controllers/apiAuth');
+//const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
+
 
 
 /* --- multer setting --- */
@@ -30,11 +34,34 @@ const upload = multer({
 
 const router = express.Router();
 
+router.use((req, res, next) => {
+	res.locals.user = req.user;
+	next();
+});
+
+/* --- API(로그인) --- */
+
+// POST /api/join (회원가입)
+// router.post('/join', isNotLoggedIn, join);
+router.post('/join', join);
+
+// POST /api/login (로그인)
+// router.post('/login', isNotLoggedIn, login);
+router.post('/login', login);
+
+// GET /api/logout (로그아웃)
+// router.get('/logout', isLoggedIn, logout);
+router.get('/logout', logout);
+
+
+
 /* --- API(get) --- */
 router.get('/study/all', findAll);
 router.get('/:gpId/info', studyInfo);
 router.get('/:gpId/member', studyMemberInfo);
 router.get('/:gpId/assignment', studyAssignment);
+
+router.get('/user/info', userInfo);
 
 /* --- API(post, delete) --- */
 router.post('/group', create);
@@ -48,6 +75,9 @@ router.get('/download/:filename', getAssignment);
 router.delete('/assignment', deleteAssignment);
 
 // POST /api/assignment (과제 제출)
-router.post('/assignment', upload.single('file'), submitAssignment);
+router.post('/assignment', upload.single('fileData'), submitAssignment);
+
+// POST /api/assignmentBox (과제함 생성)
+router.post('/assignment', createBox);
 
 module.exports = router;

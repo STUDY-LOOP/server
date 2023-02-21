@@ -32,7 +32,7 @@ exports.create = async (req, res, next) => {
 		    groupId,
 		    rule,
 		});
-		return res.redirect(`/study-group/${groupPublicId}`);
+		//return res.redirect(`/study-group/${groupPublicId}`);
 	} catch(error) {
 		console.error(error);
 		return next(error);
@@ -173,7 +173,7 @@ exports.createBox = async (req, res, next) => {
 			deadline: null,
 		});
 
-		return res.redirect(`/study-group/${gpId}/assignment`);
+		return res.redirect(`/`);
 	}catch(error){
 		console.error(error);
 		return next(error);
@@ -196,10 +196,10 @@ exports.deleteBox = async (req, res, next) => {
 // 과제 제출
 exports.submitAssignment = async (req, res, next) => {
 	try{
-		const { gpId, boxId, uploader } = req.body;
-		//const uploader = req.session.passport.user;
-		const filename = `${req.filename}`;
-		const fileOrigin = `${req.originalname}`;
+		const jsonData = JSON.parse(req.body.jsonData);
+		const { gpId, boxId, uploader } = jsonData;
+		const filename = `${req.file.filename}`;
+		const fileOrigin = `${req.file.originalname}`;
 
 		await Assignment.create({
 			boxId,
@@ -208,7 +208,7 @@ exports.submitAssignment = async (req, res, next) => {
 			fileOrigin,
 		});
 
-		return res.redirect(`/study-group/${gpId}/assignment`);
+		//return res.redirect(`/study-group/${gpId}/assignment`);
 	}catch(error){
 		console.error(error);
 		return next(error);
