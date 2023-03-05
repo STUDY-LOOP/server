@@ -51,7 +51,11 @@ sequelize.sync({ force: false })
 	});
 
 
-app.use(cors());
+app.use(cors({ 
+	credentials: true, 
+	origin: true, //'http://localhost:3001',
+}));
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -60,9 +64,8 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false,
 	secret: process.env.COOKIE_SECRET,
-	//store: new MemoryStore(),
 	cookie: {
-		httpOnly: true,
+		httpOnly: false,
 		secure: false,
 	},
 }));

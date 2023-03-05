@@ -3,8 +3,8 @@ const passport = require('passport');
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
-const { findAll, studyInfo, studyMemberInfo, studyAssignment, userInfo } = require('../controllers/api');
-const { create, quit, createBox, submitAssignment, getAssignment, deleteAssignment } = require('../controllers/apiStudyGroup');
+const { findAll, studyInfo, studyMemberInfo, studyAssignment } = require('../controllers/api');
+const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment } = require('../controllers/apiStudyGroup');
 const { join, login, logout } = require('../controllers/apiAuth');
 //const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 
@@ -41,32 +41,47 @@ router.use((req, res, next) => {
 
 /* --- API(로그인) --- */
 
-// POST /api/join (회원가입)
-// router.post('/join', isNotLoggedIn, join);
-router.post('/join', join);
+// POST /api/user (회원가입)
+router.post('/user', join);
 
-// POST /api/login (로그인)
-// router.post('/login', isNotLoggedIn, login);
-router.post('/login', login);
+// POST /api/user/login (로그인)
+router.post('/user/login', login);
 
 // GET /api/logout (로그아웃)
-// router.get('/logout', isLoggedIn, logout);
-router.get('/logout', logout);
+router.get('/user/logout', logout);
 
 
 
 /* --- API(get) --- */
+
+// GET /api/study/all (스터디 목록 조회)
 router.get('/study/all', findAll);
+
+// GET /api/:gpId/info (스터디 정보 조회)
 router.get('/:gpId/info', studyInfo);
+
+// GET /api/:gpId/member (특정 스터디원 정보 조회)
 router.get('/:gpId/member', studyMemberInfo);
+
+// GET /api/:gpId/assignment (특정 스터디 과제 조회)
 router.get('/:gpId/assignment', studyAssignment);
 
-router.get('/user/info', userInfo);
 
-/* --- API(post, delete) --- */
+
+/* --- API(스터디) --- */
+
+// POST /api/group (스터디 생성)
 router.post('/group', create);
+
+// POST /api/group/member (스터디 가입)
+router.post('/group/member', joinGroup);
+
+// POST /api/member (스터디 탈퇴)
 router.delete('/member', quit);
 
+
+
+/* --- API(과제) --- */
 
 // GET /api/download/:filename (과제 다운로드)
 router.get('/download/:filename', getAssignment);
@@ -79,5 +94,6 @@ router.post('/assignment', upload.single('fileData'), submitAssignment);
 
 // POST /api/assignmentBox (과제함 생성)
 router.post('/assignment', createBox);
+
 
 module.exports = router;

@@ -2,24 +2,6 @@ const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, S
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-exports.userInfo = async (req, res, next) => {
-	const user = req.session.passport.user;
-	console.log("HIHI : ", user);
-	try {
-		if(!user) {
-			res.status(400).send({ data: null, message: 'not authorized' });
-		}else{
-			const userinfo = await user.findOne({ where: { email: user }});
-			//res.status(200).json({ data: userinfo, message: 'ok' });
-			res.status(200).json(userinfo);
-		}
-	} catch (error) {
-		console.error(error);
-		return next(error);
-	}
-}
-
-
 
 exports.findAll = async (req, res, next) => {
 	try {
