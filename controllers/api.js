@@ -2,6 +2,7 @@ const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, S
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
+
 exports.findAll = async (req, res, next) => {
 	try {
 		const studies = await StudyGroup.findAll({ 

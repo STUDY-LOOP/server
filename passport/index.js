@@ -4,14 +4,19 @@ const User = require('../models/user');
 
 module.exports = () => {
   passport.serializeUser((user, done) => {
-    //세션//done(null, user.id); // 세션에 user의 id만 저장
+    console.log("세션에 저장: ", user.email);
     done(null, user.email); // 세션에 user의 email만 저장
   });
 
-  passport.deserializeUser((email, done) => {
-    User.findOne({ where: { email } })
-      .then((user) => done(null, user))
-      .catch((err) => done(err));
+  passport.deserializeUser(async (email, done) => {
+    console.log("실행: deserializeUser");
+    try {
+      const user = await User.findOne({ where: { email }});
+      done(null, user); // req.user
+    } catch (error) {
+      console.error(error);
+      done(error);
+    }
   });
 
   local();
