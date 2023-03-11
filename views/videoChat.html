@@ -1,25 +1,65 @@
 {% block content %}
-<head>
-    <script>
-        const ROOM_ID = "{{ group.groupId }}" 
-        const NICKNAME = "{{ nickname }}"
-    </script> 
 
+<head>
+    <link rel="stylesheet" href="/css/videoChat.css">
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script defer src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <script defer src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"
+        integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
+        crossorigin="anonymous"></script>
     <script defer src="/js/videoChatScript.js"></script>
+
+    <script>
+        const NICKNAME = "{{ user.userNick }}"
+        const ROOM_ID = "{{ groupPublicId }}"
+    </script>
 </head>
 
 <body>
     <header>
         <h3 onclick="history.back()"> 스터디홈으로 돌아가기 </h3>
+        <h5> {{ user.userNick }} </h5>
     </header>
 
-    <div id="video-grid"></div>
+    <div class="main-container">
+        <div class="videochat-container">
+            <div class="videochat-room">
+                <div id="video-grid">
 
-    <div id="setting-grid">
-        <button id="mute">Mute</button>
-        <button id="camera">Turn Camera Off</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <div class="button-grid">
+                <button id="mute-btn">Mute</button>
+            </div>
+            <div class="button-grid">
+                <button id="camera-btn">Turn Camera Off</button>
+            </div>
+            <div class="button-grid">
+                <button onclick="exit()" id="exit-btn">Exit</button>
+            </div>
+
+        </div>
+
+        <div class="chat-container">
+            <div id="chat-room">
+                <span> Chat </span>
+            </div>
+            
+            <div id="chat-content">
+                <ul class="message">
+
+                </ul>
+                
+            </div>
+
+            <div class="enter-message">
+                <input id="enter-message" type="text" placeholder="Type message here...">
+            </div>
+        </div>
+
     </div>
 </body>
 {% endblock %}

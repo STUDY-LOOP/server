@@ -130,17 +130,18 @@ exports.renderStudyMember = async (req, res, next) => {
 
 
 exports.renderVideoChat = async (req, res, next) => {
-	const groupId = req.params.groupId;
+	const groupPublicId = req.params.groupPublicId;
 	const nickname = res.locals.user.nickname;
 
 	try {
 		const group = await StudyGroup.findOne({
-			where: { groupId: groupId }
+			where: { groupId: groupPublicId }
 		});
 
 		return res.render('videoChat', {
 			title: '스터디원 정보',
 			group,
+			groupPublicId,
 			//nickname: 세션에서 값 받아오기
 			//req.session.passport.user -> 세션에 저장된 email
 			nickname: nickname,

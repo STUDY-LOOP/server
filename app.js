@@ -51,8 +51,8 @@ sequelize.sync({ force: false })
 	});
 
 
-app.use(cors({ 
-	credentials: true, 
+app.use(cors({
+	credentials: true,
 	origin: true, //'http://localhost:3001',
 }));
 
@@ -117,37 +117,43 @@ io.on('connection', (socket) => {
 	//msg chat
 	socket['nickname'] = 'Anonymous';
 	socket.on('enter_chat_room', (chatRoomName, done) => {
-	  socket.join(chatRoomName);
-	  done();
+		socket.join(chatRoomName);
+		done();
 	});
 	socket.on('new_message', (msg, room, done) => {
-	  // connectDB.query(
-	  //   `INSERT INTO chat (room_id, u_id, notice, content, datetime) VALUES ('${studyRoomId}', '${Nickname}', 0, '${msg}', '${formattedDateTime}')`
-	  // );
-	  socket.to(room).emit('new_message', `${socket.nickname}: ${msg}`);
-	  done(); //triggers function located at frontend
+
+		socket.to(room).emit('new_message', `${socket.nickname}: ${msg}`);
+		done(); //triggers function located at frontend
 	});
 	socket.on('nickname', (nickname) => (socket['nickname'] = nickname));
 	socket.on('new_notice', (msg, room, done) => {
-	  // connectDB.query(
-	  //   `INSERT INTO chat (room_id, u_id, notice, content, datetime) VALUES ('${studyRoomId}', '${Nickname}', 1, '${msg}', '${formattedDateTime}')`
-	  // );
-	  socket.to(room).emit('new_notice', `NOTICE: ${msg}`);
-	  done();
+
+		socket.to(room).emit('new_notice', `NOTICE: ${msg}`);
+		done();
 	});
 
+	let room, id, name
 	//video chat
-	socket.on('join-room', (roomId, userId) => {
+	socket.on('join-room', (roomId, userId, userName) => {
+		room = roomId
+    	id = userId
+    	name = userName
+
 		socket.join(roomId);
-	
-		socket.on('connection-request', (roomId, userId, nickname) => {
-			socket.to(roomId).emit('new-user-connected', userId, nickname);
-		});
-	
+		socket.to(roomId).emit('new-user-connected', { id: id, name: name }) 
+
+		//chat
+		socket.on('new-message', (sender, message, roomId, done) => {
+			socket.to(roomId).emit('new-message', sender, `${name}: ${message}`);
+			done(); //triggers function located at frontend
+		}); 
+
 		socket.on('disconnect', () => {
-			socket.to(roomId).emit('user-disconnected', userId);
+			socket.to(roomId).emit('user-disconnected', id);
+			socket.to(roomId).emit('update-video', { id: id, name: name });
 		});
 	});
+
 });
 
 server.listen(app.get('port'), () => {
