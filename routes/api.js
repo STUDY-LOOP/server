@@ -4,7 +4,8 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const { findAll, studyInfo, studyMemberInfo, studyAssignment } = require('../controllers/api');
-const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment } = require('../controllers/apiStudyGroup');
+const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, addEvent } = require('../controllers/apiStudyGroup');
+const { getEvent, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
 //const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 
@@ -93,7 +94,17 @@ router.delete('/assignment', deleteAssignment);
 router.post('/assignment', upload.single('fileData'), submitAssignment);
 
 // POST /api/assignmentBox (과제함 생성)
-router.post('/assignment', createBox);
+router.post('/assignmentBox', createBox);
+
+
+
+/* --- API(캘린더) --- */
+
+// GET /api/:gpid/event (이벤트 정보 가져오기)
+router.get('/:gpId/event', getEvent);
+
+// POST /api/event (이벤트 생성)
+router.post('/event', createEvent);
 
 
 module.exports = router;

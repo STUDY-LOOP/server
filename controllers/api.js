@@ -74,3 +74,17 @@ exports.studyAssignment = async (req, res, next) => {
 		return next(error);
 	}
 };
+
+
+exports.getEvent = async (req, res, next) => {
+	try{
+		const groupPublicId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId } });
+		const events = await group.getEvents();
+
+		return res.json(events);
+	}catch(error){
+		console.error(error);
+		return next(error);
+	}
+};
