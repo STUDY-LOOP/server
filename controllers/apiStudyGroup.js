@@ -145,15 +145,8 @@ exports.remove = async (req, res, next) => {
 exports.createBox = async (req, res, next) => {
 	try{
 		const { gpId, log, title, content, deadline } = req.body;
-		const values = gpId.split('=');
 		const boxId = uuidv4();
-
-		const group_dev = await StudyGroup.findOne({ 
-			where: {
-				groupName: values[0],
-				groupId: { [Op.like]: values[1] + "%" },
-			} 
-		});
+		const group_dev = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
 
 		await StudyLog.findOrCreate({ where: { groupId: group_dev.groupId, log } });
 
@@ -163,7 +156,7 @@ exports.createBox = async (req, res, next) => {
 			boxId, 
 			title, 
 			content, 
-			deadline: null,
+			deadline,
 		});
 
 		return res.redirect(`/`);

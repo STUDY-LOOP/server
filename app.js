@@ -13,13 +13,14 @@ const cors = require('cors');
 
 dotenv.config();
 const apiRouter = require('./routes/api');
-const pageRouter = require('./routes/page');
-const authRouter = require('./routes/auth');
-const userRouter = require('./routes/user');
-const userPageRouter = require('./routes/userPage');
-const studyGroupRouter = require('./routes/studyGroup');
-const studyGroupPageRouter = require('./routes/studyGroupPage');
-const eventsRouter = require('./routes/events');
+// const apiEventsRouter = require('./routes/apiEvents');
+// const pageRouter = require('./routes/page');
+// const authRouter = require('./routes/auth');
+// const userRouter = require('./routes/user');
+// const userPageRouter = require('./routes/userPage');
+// const studyGroupRouter = require('./routes/studyGroup');
+// const studyGroupPageRouter = require('./routes/studyGroupPage');
+// const eventsRouter = require('./routes/events');
 
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
@@ -83,15 +84,15 @@ app.use('/peerjs', peerServer);
 
 /* --- router --- */
 
-app.use('/', pageRouter);
+app.get('/', (req, res, next)=> { return });
 app.use('/api', apiRouter);
-app.use('/events', eventsRouter);
-app.use('/auth', authRouter);
-app.use('/user', userRouter);
-app.use('/my', userPageRouter);
-app.use('/group', studyGroupRouter);
-app.use('/study-group', studyGroupPageRouter);
-
+// app.use('/apiEvents', apiEventsRouter);
+// app.use('/events', eventsRouter);
+// app.use('/auth', authRouter);
+// app.use('/user', userRouter);
+// app.use('/my', userPageRouter);
+// app.use('/group', studyGroupRouter);
+// app.use('/study-group', studyGroupPageRouter);
 
 
 app.use((req, res, next) => {

@@ -3,6 +3,15 @@ const Sequelize = require('sequelize');
 module.exports = class Event extends Sequelize.Model{
 	static init(sequelize) {
 		return super.init({
+			id: {
+				type : Sequelize.INTEGER,
+				primaryKey : true,
+				autoIncrement : true
+			},
+			groupId: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
 			event_title: {
 				type: Sequelize.STRING(30),
 				allowNull: false,
@@ -11,15 +20,19 @@ module.exports = class Event extends Sequelize.Model{
 				type: Sequelize.STRING(30),
 				allowNull: false,
 			},
+			event_color: {
+				type: Sequelize.STRING(30),
+				allowNull: false,
+			},
 			date_start: {
 				type: Sequelize.DATE, //YYYY-MM-DDTHH:MM:SSZ
 				allowNull: true,
-				defaultValue: Sequelize.NOW,
+				//defaultValue: Sequelize.NOW,
 			},
 			date_end: {
 				type: Sequelize.DATE,
 				allowNull: true,
-				defaultValue: Sequelize.NOW,
+				//defaultValue: Sequelize.NOW,
 			},
 			event_des: {
 				type: Sequelize.STRING(100),
@@ -38,6 +51,10 @@ module.exports = class Event extends Sequelize.Model{
 	}
 
 	static associate(db) {
-		//db.Event.belongsTo(db.studyGroup, { foreignKey: 'groupId', targetKey: 'group_id' });
+		db.Event.belongsTo(db.StudyGroup, {
+            foreignKey: 'groupId',
+            targetKey: 'groupId',
+            onDelete: 'cascade',
+        });
 	}
 };
