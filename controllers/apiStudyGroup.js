@@ -159,7 +159,7 @@ exports.createBox = async (req, res, next) => {
 			deadline,
 		});
 
-		return res.redirect(`/`);
+		return res.json(boxId);
 	}catch(error){
 		console.error(error);
 		return next(error);
@@ -229,3 +229,22 @@ exports.deleteAssignment = async (req, res, next) => {
 		return next(error);
 	}
 }
+
+exports.studyOneAssignment = async (req, res, next) => {
+	try {
+		const boxId = req.params.boxId;
+		const box = await AssignmentBox.findOne({ 
+			where: { boxId },
+			attributes: ['boxId', 'title'],
+			include: [{  
+				model: Assignment, 
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
+				include: [{ model: User, attributes: ['userNick'] }],
+			}],
+		})
+		res.json(box);
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};

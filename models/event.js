@@ -38,6 +38,10 @@ module.exports = class Event extends Sequelize.Model{
 				type: Sequelize.STRING(100),
 				allowNull: true,
 			},
+			boxId: {
+                type: Sequelize.STRING,
+                allowNull: true,
+            },
 		}, {
 			sequelize,
 			timestamps: true,
@@ -54,6 +58,11 @@ module.exports = class Event extends Sequelize.Model{
 		db.Event.belongsTo(db.StudyGroup, {
             foreignKey: 'groupId',
             targetKey: 'groupId',
+            onDelete: 'cascade',
+        });
+		db.Event.belongsTo(db.AssignmentBox, {
+            foreignKey: 'boxId',
+            sourceKey: 'boxId',
             onDelete: 'cascade',
         });
 	}

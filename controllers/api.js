@@ -76,14 +76,26 @@ exports.studyAssignment = async (req, res, next) => {
 };
 
 
-exports.getEvent = async (req, res, next) => {
-	try{
+exports.studyOneAssignment = async (req, res, next) => {
+	try {
 		const groupPublicId = req.params.gpId;
-		const group = await StudyGroup.findOne({ where: { groupPublicId } });
-		const events = await group.getEvents();
+		const boxId = req.params.boxId;
 
-		return res.json(events);
-	}catch(error){
+		const box = await AssignmentBox.findOne({ 
+			where: { boxId },
+			attributes: ['boxId', 'title'],
+			include: [{  
+				model: Assignment, 
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
+				include: [{ model: User, attributes: ['userNick'] }],
+			}],
+		})
+
+		//console.log(boxId, box);
+
+		res.json(box);
+
+	} catch (error) {
 		console.error(error);
 		return next(error);
 	}

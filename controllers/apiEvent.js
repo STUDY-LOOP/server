@@ -35,7 +35,8 @@ exports.getEvent = async (req, res, next) => {
                 ['date_start', 'start'],
                 ['date_end', 'end'],
                 ['event_color', 'color'],
-                'event_type'
+                'event_type',
+				'boxId',
             ]
          });
 
