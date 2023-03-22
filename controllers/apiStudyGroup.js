@@ -159,7 +159,7 @@ exports.createBox = async (req, res, next) => {
 			deadline,
 		});
 
-		return res.redirect(`/`);
+		return res.json(boxId);
 	}catch(error){
 		console.error(error);
 		return next(error);
@@ -229,3 +229,24 @@ exports.deleteAssignment = async (req, res, next) => {
 		return next(error);
 	}
 }
+
+// 과제함 조회
+exports.studyOneAssignment = async (req, res, next) => {
+	try {
+		const boxId = req.params.boxId;
+		const box = await AssignmentBox.findOne({ 
+			where: { boxId },
+			attributes: ['boxId', 'title', 'log', 'deadline', 'content'],
+			include: [{  
+				model: Assignment, 
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData', 'submittedOn'],
+				include: [{ model: User, attributes: ['userNick'] }],
+				order: [['submittedOn', 'ASC']],
+			}],
+		})
+		res.json(box);
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
