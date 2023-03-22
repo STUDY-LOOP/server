@@ -75,29 +75,3 @@ exports.studyAssignment = async (req, res, next) => {
 		return next(error);
 	}
 };
-
-
-// exports.studyOneAssignment = async (req, res, next) => {
-// 	try {
-// 		const groupPublicId = req.params.gpId;
-// 		const boxId = req.params.boxId;
-
-// 		const box = await AssignmentBox.findOne({ 
-// 			where: { boxId },
-// 			attributes: ['boxId', 'title'],
-// 			include: [{  
-// 				model: Assignment, 
-// 				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
-// 				include: [{ model: User, attributes: ['userNick'] }],
-// 			}],
-// 		})
-
-// 		//console.log(boxId, box);
-
-// 		res.json(box);
-
-// 	} catch (error) {
-// 		console.error(error);
-// 		return next(error);
-// 	}
-// };
