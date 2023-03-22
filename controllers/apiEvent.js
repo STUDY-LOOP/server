@@ -5,7 +5,7 @@ const Op = Sequelize.Op;
 exports.createEvent = async (req, res, next) => {
 	try{
         console.log(req.body);
-        const { gpId, event_title, event_type, date_start, date_end, event_color } = req.body;
+        const { gpId, event_title, event_type, date_start, date_end, event_color, boxId } = req.body;
 		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
 
         await Event.create({
@@ -15,6 +15,7 @@ exports.createEvent = async (req, res, next) => {
 			date_start: date_start,
 			date_end: date_end,
             event_color: event_color,
+			boxId: boxId,
 		});
 
 	}catch(error){

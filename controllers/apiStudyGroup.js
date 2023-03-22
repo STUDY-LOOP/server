@@ -230,16 +230,18 @@ exports.deleteAssignment = async (req, res, next) => {
 	}
 }
 
+// 과제함 조회
 exports.studyOneAssignment = async (req, res, next) => {
 	try {
 		const boxId = req.params.boxId;
 		const box = await AssignmentBox.findOne({ 
 			where: { boxId },
-			attributes: ['boxId', 'title'],
+			attributes: ['boxId', 'title', 'log', 'deadline', 'content'],
 			include: [{  
 				model: Assignment, 
-				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData', 'submittedOn'],
 				include: [{ model: User, attributes: ['userNick'] }],
+				order: [['submittedOn', 'ASC']],
 			}],
 		})
 		res.json(box);

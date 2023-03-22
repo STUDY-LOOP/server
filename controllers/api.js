@@ -59,12 +59,13 @@ exports.studyAssignment = async (req, res, next) => {
 		const group_dev = await StudyGroup.findOne({ where: { groupPublicId } });
 
 		const boxlist = await group_dev.getAssignmentBoxes({
-			attributes: ['boxId', 'title'],
+			attributes: ['boxId', 'title', 'log', 'deadline', 'content'],
 			include: [{  
 				model: Assignment, 
 				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
 				include: [{ model: User, attributes: ['userNick'] }],
 			}],
+			order: [ ['log', 'ASC'], ['deadline', 'ASC'] ]
 		});
 
 		res.json(boxlist);
@@ -76,27 +77,27 @@ exports.studyAssignment = async (req, res, next) => {
 };
 
 
-exports.studyOneAssignment = async (req, res, next) => {
-	try {
-		const groupPublicId = req.params.gpId;
-		const boxId = req.params.boxId;
+// exports.studyOneAssignment = async (req, res, next) => {
+// 	try {
+// 		const groupPublicId = req.params.gpId;
+// 		const boxId = req.params.boxId;
 
-		const box = await AssignmentBox.findOne({ 
-			where: { boxId },
-			attributes: ['boxId', 'title'],
-			include: [{  
-				model: Assignment, 
-				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
-				include: [{ model: User, attributes: ['userNick'] }],
-			}],
-		})
+// 		const box = await AssignmentBox.findOne({ 
+// 			where: { boxId },
+// 			attributes: ['boxId', 'title'],
+// 			include: [{  
+// 				model: Assignment, 
+// 				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
+// 				include: [{ model: User, attributes: ['userNick'] }],
+// 			}],
+// 		})
 
-		//console.log(boxId, box);
+// 		//console.log(boxId, box);
 
-		res.json(box);
+// 		res.json(box);
 
-	} catch (error) {
-		console.error(error);
-		return next(error);
-	}
-};
+// 	} catch (error) {
+// 		console.error(error);
+// 		return next(error);
+// 	}
+// };
