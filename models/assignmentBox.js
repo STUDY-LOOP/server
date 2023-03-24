@@ -58,5 +58,10 @@ module.exports = class AssignmentBox extends Sequelize.Model{
             sourceKey: 'boxId',
             onDelete: 'cascade',
         });
+        db.AssignmentBox.hasOne(db.Event, {
+            foreignKey: 'boxId',
+            sourceKey: 'boxId',
+            onDelete: 'cascade',
+        });
     }
 };

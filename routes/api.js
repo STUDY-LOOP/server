@@ -17,7 +17,7 @@ const {
   submitAssignment,
   getAssignment,
   deleteAssignment,
-  addEvent,
+  studyOneAssignment,
 } = require('../controllers/apiStudyGroup');
 const { getEvent, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
@@ -74,8 +74,11 @@ router.get('/:gpId/info', studyInfo);
 // GET /api/:gpId/member (특정 스터디원 정보 조회)
 router.get('/:gpId/member', studyMemberInfo);
 
-// GET /api/:gpId/assignment (특정 스터디 과제 조회)
+// GET /api/:gpId/assignment (특정 스터디 전체 과제 조회)
 router.get('/:gpId/assignment', studyAssignment);
+
+// GET /api/:gpId/:boxId (특정 스터디 특정 과제 조회)
+router.get('/:boxId', studyOneAssignment);
 
 /* --- API(스터디) --- */
 

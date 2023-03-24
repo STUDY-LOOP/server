@@ -54,6 +54,6 @@ exports.login = (req, res, next) => {
 
 exports.logout = (req, res) => {
 	req.logout(() => {
-		res.redirect('/');
+		return res.send({message: "request success"})
 	});
 };
