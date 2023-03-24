@@ -1,41 +1,60 @@
 const Sequelize = require('sequelize');
 
-class Chat extends Sequelize.Model {
-  static initiate(sequelize) {
-    Chat.init({
-      roomId: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true,
+module.exports = class Chat extends Sequelize.Model {
+  static init(sequelize) {
+    return super.init(
+      {
+        chatId: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
+        groupId: {
+          type: Sequelize.STRING(255),
+          primaryKey: true,
+        },
+        email: {
+          type: Sequelize.STRING(40),
+          primaryKey: true,
+        },
+        notice: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        content: {
+          type: Sequelize.STRING(5000),
+          allowNull: true,
+        },
+        datetime: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW,
+        },
       },
-      userName: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-      },
-      userName: {
-        type: Sequelize.STRING(200),
-        allowNull: false,
-      }, 
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-    }, {
-      sequelize,
-      timestamps: true,
-      underscored: false,
-      modelName: 'Chat',
-      tableName: 'chats',
-      paranoid: false,
-      charset: 'utf8',
-      collate: 'utf8_general_ci',
-    });
+      {
+        sequelize,
+        timestamps: true,
+        underscored: false,
+        modelName: 'Chat',
+        tableName: 'chats',
+        paranoid: false,
+        charset: 'utf8',
+        collate: 'utf8_general_ci',
+      }
+    );
   }
 
   static associate(db) {
-    //db.Chat.belongsTo(db.Room, { foreignKey: 'groupId', targetKey: 'group_id' });
+    // chat:스터디 = N:1
+    db.Chat.hasMany(db.StudyGroup, {
+      foreignKey: 'groupId',
+      targetKey: 'groupId',
+    });
+    // chat:유저 = N:1
+    db.Chat.hasMany(db.User, {
+      foreignKey: 'email',
+      targetKey: 'email',
+    });
   }
 };
-
-module.exports = Chat;
