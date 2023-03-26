@@ -3,26 +3,13 @@ const passport = require('passport');
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
-const {
-  findAll,
-  studyInfo,
-  studyMemberInfo,
-  studyAssignment,
-} = require('../controllers/api');
-const {
-  create,
-  joinGroup,
-  quit,
-  createBox,
-  submitAssignment,
-  getAssignment,
-  deleteAssignment,
-  studyOneAssignment,
-} = require('../controllers/apiStudyGroup');
+
+const { findAll, studyInfo, studyMemberInfo, studyAssignment, userInfo, userAsLeader, userAsMember } = require('../controllers/api');
+const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment } = require('../controllers/apiStudyGroup');
 const { getEvent, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
 const apiChat = require('../controllers/apiChat');
-//const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
+const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 
 /* --- multer setting --- */
 try {
@@ -79,6 +66,12 @@ router.get('/:gpId/assignment', studyAssignment);
 
 // GET /api/:gpId/:boxId (특정 스터디 특정 과제 조회)
 router.get('/:boxId', studyOneAssignment);
+
+// GET /api/:gpId/:boxId (특정 사용자 정보 조회)
+router.get('/user/:email/info', userInfo);
+router.get('/user/:email/leader', userAsLeader);
+router.get('/user/:email/member', userAsMember);
+
 
 /* --- API(스터디) --- */
 
