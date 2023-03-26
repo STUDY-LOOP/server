@@ -33,7 +33,7 @@ exports.getEvent = async (req, res, next) => {
 		const events = await Event.findAll({ 
             where: { groupId: group.groupId },
             attributes: [
-                // ['id', 'allDay'],
+                ['id', 'allDay'],
                 ['event_title', 'title'], 
                 ['date_start', 'start'],
                 ['date_end', 'end'],
