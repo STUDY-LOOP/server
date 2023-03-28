@@ -4,7 +4,7 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 
-const { findAll, studyInfo, studyMemberInfo, studyAssignment, userInfo, userAsLeader, userAsMember } = require('../controllers/api');
+const { findAll, studyInfo, studyMemberInfo, studyAssignment, userInfo, userAsLeader, userAsMember, studyLog } = require('../controllers/api');
 const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment } = require('../controllers/apiStudyGroup');
 const { getEvent, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
@@ -50,6 +50,8 @@ router.post('/user/login', login);
 // GET /api/logout (로그아웃)
 router.get('/user/logout', logout);
 
+
+
 /* --- API(get) --- */
 
 // GET /api/study/all (스터디 목록 조회)
@@ -72,6 +74,10 @@ router.get('/user/:email/info', userInfo);
 router.get('/user/:email/leader', userAsLeader);
 router.get('/user/:email/member', userAsMember);
 
+// GET /api/:log (스터디 회의록 조회)
+router.get('/log/:log', studyLog);
+
+
 
 /* --- API(스터디) --- */
 
@@ -83,6 +89,8 @@ router.post('/group/member', joinGroup);
 
 // POST /api/member (스터디 탈퇴)
 router.delete('/member', quit);
+
+
 
 /* --- API(과제) --- */
 
@@ -98,6 +106,8 @@ router.post('/assignment', upload.single('fileData'), submitAssignment);
 // POST /api/assignmentBox (과제함 생성)
 router.post('/assignmentBox', createBox);
 
+
+
 /* --- API(캘린더) --- */
 
 // GET /api/:gpid/event (이벤트 정보 가져오기)
@@ -105,6 +115,8 @@ router.get('/:gpId/event', getEvent);
 
 // POST /api/event (이벤트 생성)
 router.post('/event', createEvent);
+
+
 
 /* --- API(채팅) --- */
 

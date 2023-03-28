@@ -132,3 +132,20 @@ exports.userAsMember = async (req, res, next) => {
 		return next(error);
 	};
 };
+
+
+// 스터디 회의록 조회
+exports.studyLog = async (req, res, next) => {
+	try{
+		const log = req.params.log;
+		const content = await StudyLog.findOne({
+			attributes: ['content'],
+			where: { log }
+		});
+
+		return res.json(content);
+	}catch(error){
+		console.error(error);
+		return next(error);
+	};
+};
