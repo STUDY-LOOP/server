@@ -4,7 +4,11 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 
-const { findAll, studyInfo, studyMemberInfo, studyAssignment, userInfo, userAsLeader, userAsMember, studyLog } = require('../controllers/api');
+const {
+	findAll, studyInfo, studyMemberInfo, studyAssignment, 
+	userInfo, userAsLeader, userAsMember, userAllAssignment, userAssignment, 
+	studyLog
+} = require('../controllers/api');
 const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment } = require('../controllers/apiStudyGroup');
 const { getEvent, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
@@ -13,30 +17,30 @@ const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 
 /* --- multer setting --- */
 try {
-  fs.readdirSync('public/uploads');
+	fs.readdirSync('public/uploads');
 } catch (error) {
-  console.error('uploads 폴더 생성');
-  fs.mkdirSync('public/uploads');
+	console.error('uploads 폴더 생성');
+	fs.mkdirSync('public/uploads');
 }
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, cb) {
-      cb(null, 'public/uploads/');
-    },
-    filename(req, file, cb) {
-      const ext = path.extname(file.originalname);
-      cb(null, path.basename(file.originalname, ext) + '-' + Date.now() + ext);
-    },
-  }),
-  limits: { fileSize: 10 * 1024 * 1024 },
+	storage: multer.diskStorage({
+		destination(req, file, cb) {
+			cb(null, 'public/uploads/');
+		},
+		filename(req, file, cb) {
+			const ext = path.extname(file.originalname);
+			cb(null, path.basename(file.originalname, ext) + '-' + Date.now() + ext);
+		},
+	}),
+	limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 const router = express.Router();
 
 router.use((req, res, next) => {
-  res.locals.user = req.user;
-  next();
+	res.locals.user = req.user;
+	next();
 });
 
 /* --- API(로그인) --- */
@@ -73,6 +77,8 @@ router.get('/:boxId', studyOneAssignment);
 router.get('/user/:email/info', userInfo);
 router.get('/user/:email/leader', userAsLeader);
 router.get('/user/:email/member', userAsMember);
+router.get('/user/:email/assignment', userAllAssignment);
+router.get('/user/:email/assignment/:boxId', userAssignment);
 
 // GET /api/:log (스터디 회의록 조회)
 router.get('/log/:log', studyLog);
