@@ -7,9 +7,9 @@ const path = require('path');
 const {
 	findAll, studyInfo, studyMemberInfo, studyAssignment, 
 	userInfo, userAsLeader, userAsMember, userAllAssignment, userAssignment, 
-	studyLog
+	studyLog, getMeetId, getAttendance
 } = require('../controllers/api');
-const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment } = require('../controllers/apiStudyGroup');
+const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment, checkAttendance } = require('../controllers/apiStudyGroup');
 const { getEvent, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
 const apiChat = require('../controllers/apiChat');
@@ -130,3 +130,16 @@ router.post('/event', createEvent);
 router.post('/chat', apiChat.saveChat);
 
 module.exports = router;
+
+
+
+/* --- API(출석) --- */
+
+// GET /api/:gpId/meet (특정 회의 조회)
+router.get('/:gpId/meet', getMeetId);
+
+// GET /api/:gpId/attendance/:log (특정 회의 출석 조회)
+router.get('/attendance/:log', getAttendance);
+
+// POST /api/:gpId/check-attendance/:meetId (출석 체크))
+router.post('/:gpId/check-attendance/:meetId', checkAttendance);

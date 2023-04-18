@@ -1,4 +1,4 @@
-const { sequelize, StudyGroup, StudyRule, StudySchedule, StudyLog, User, AssignmentBox, Assignment } = require('../models');
+const { sequelize, StudyGroup, StudyRule, StudySchedule, StudyLog, User, AssignmentBox, Assignment, Event, Attendance } = require('../models');
 const func = require('../module/functions');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
@@ -250,3 +250,69 @@ exports.studyOneAssignment = async (req, res, next) => {
 		return next(error);
 	}
 };
+
+
+
+/* --- 출석부 --- */
+
+// 출석 체크
+exports.checkAttendance = async (req, res, next) => {
+
+	try {
+		const groupPublicId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId } });
+		const groupId = group.groupId
+
+		const eventId = req.params.meetId;
+		
+		const { userNick, enterDate } = req.body;
+
+		const event = await Event.findOne({
+			attributes: ['date_start'],
+			where: {
+				id: eventId
+			},
+		});
+
+		const dateE = new Date(enterDate);
+		const dateM = new Date(event.date_start);
+	
+		var attendState = -1; // 결석
+		const late = (dateE - dateM) / 1000 / 60;
+
+		console.log('지각? ', late);
+		 
+		if (late <= 5) {
+			attendState = 0; // 출석
+			console.log('출석');
+		} else if (late < 16) { // 5 < late < 16
+			attendState = 1; // 지각
+			console.log('지각');
+		} else {
+			attendState = -1;
+		}
+
+		const [attendance, created] = await Attendance.findOrCreate({
+			where: {
+				eventId: eventId,
+				userNick: userNick
+			},
+			defaults: {
+				eventId: eventId, 
+				groupPublicId: groupPublicId, 
+				userNick: userNick,
+				enterDate: enterDate,
+				attendState: attendState
+			}
+		})
+		if (created) {
+			console.log(created)
+		} else {
+
+		}
+						
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+}

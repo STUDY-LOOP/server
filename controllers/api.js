@@ -1,4 +1,4 @@
-const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog } = require('../models');
+const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog, Attendance } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -188,3 +188,66 @@ exports.studyLog = async (req, res, next) => {
 		return next(error);
 	};
 };
+
+
+/* --- 출석부 --- */
+
+// 회의 이벤트 아이디
+exports.getMeetId = async (req, res, next) => {
+	try {
+		const groupPublicId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId } });
+		const groupId = group.groupId
+
+		var today = new Date();
+		// dateTimeString 코드 정리
+		var year = today.getFullYear();
+		var month = ('0' + (today.getMonth() + 1)).slice(-2);
+		var day = ('0' + today.getDate()).slice(-2);
+		const dateString = year + '-' + month + '-' + day; //YYYY-MM-DD
+		const dateStart = dateString + ' 00:00:00'
+		const dateEnd = dateString + ' 23:59:59'
+
+		// console.log('start: ', dateStart);
+		// console.log('end: ', dateEnd);
+
+		const event = await Event.findOne({
+			attributes: ['id'],
+			where: {
+				groupId: groupId, //group id
+				event_type: '0', //회의
+				date_start: { [Op.between]: [dateStart, dateEnd] }		
+			},
+		});
+		
+		return res.json(event.id);
+	} catch (error) {
+		return next(error);
+	}
+};
+
+// 특정 회의 출석 조회
+exports.getAttendance = async (req, res, next) => {
+	try {
+		// const groupPublicId = req.params.gpId;
+		const meetId = req.params.log;
+
+		// 출석 정보 조회 
+		const attendance = await Attendance.findAll({
+			raw: true,
+			attributes: ['userNick', 'attendState'],
+			where: {
+				// groupPublicId: groupPublicId,
+				eventId: meetId
+			}
+		});
+
+		console.log(attendance);
+		return res.json(attendance);
+
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
+
