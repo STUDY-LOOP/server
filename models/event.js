@@ -65,5 +65,10 @@ module.exports = class Event extends Sequelize.Model{
             sourceKey: 'boxId',
             onDelete: 'cascade',
         });
+		db.Event.hasOne(db.StudyLog, {
+            foreignKey: 'log',
+            sourceKey: 'id',
+            onDelete: 'cascade',
+        });
 	}
 };

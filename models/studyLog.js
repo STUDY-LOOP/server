@@ -6,13 +6,17 @@ module.exports = class StudyLog extends Sequelize.Model{
             groupId: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                primaryKey: true,
             },
             log: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-            }
+            },
+            content: {
+                type: Sequelize.TEXT,
+                allowNull: true,
+            },
+
         }, {
             sequelize,
             timestamps: false,
@@ -31,10 +35,14 @@ module.exports = class StudyLog extends Sequelize.Model{
             targetKey: 'groupId',
             onDelete: 'cascade',
         });
-
         db.StudyLog.hasMany(db.Assignment, {
             foreignKey: 'groupId',
             sourceKey: 'groupId',
+            onDelete: 'cascade',
+        });
+        db.StudyLog.belongsTo(db.Event, {
+            foreignKey: 'log',
+            sourceKey: 'id',
             onDelete: 'cascade',
         });
     }

@@ -1,4 +1,4 @@
-const { User, StudyGroup, Event } = require('../models');
+const { User, StudyGroup, Event, StudyLog } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -8,7 +8,7 @@ exports.createEvent = async (req, res, next) => {
         const { gpId, event_title, event_type, date_start, date_end, event_des, event_color, boxId } = req.body;
 		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
 
-        await Event.create({
+        const event = await Event.create({
 			groupId: group.groupId,
 			event_title: event_title,
 			event_type: event_type,
@@ -18,6 +18,14 @@ exports.createEvent = async (req, res, next) => {
             event_color: event_color,
 			boxId: boxId,
 		});
+
+		// 일정이 스터디인 경우 -> 스터디 로그 생성
+		if (event_type === '0') {
+			await StudyLog.create({
+				groupId: group.groupId,
+				log: event.id,
+			});
+		}
 
 		return true;
 	}catch(error){
@@ -38,6 +46,7 @@ exports.getEvent = async (req, res, next) => {
                 ['date_start', 'start'],
                 ['date_end', 'end'],
                 ['event_color', 'color'],
+				['id', 'log'],
                 'event_type',
 				'boxId',
 				'event_des',

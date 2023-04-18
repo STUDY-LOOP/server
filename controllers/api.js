@@ -66,10 +66,10 @@ exports.studyAssignment = async (req, res, next) => {
 			attributes: ['boxId', 'title', 'log', 'deadline', 'content'],
 			include: [{  
 				model: Assignment, 
-				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData'],
+				attributes: ['uploader', 'filename', 'fileOrigin', 'linkData', 'submittedOn'],
 				include: [{ model: User, attributes: ['userNick'] }],
 			}],
-			order: [ ['log', 'ASC'], ['deadline', 'ASC'] ]
+			order: [ ['log', 'ASC'], ['deadline', 'ASC'], [Assignment, 'id', 'ASC'] ]
 		});
 
 		res.json(boxlist);
@@ -127,6 +127,62 @@ exports.userAsMember = async (req, res, next) => {
 		});
 
 		return res.json(asMember);
+	}catch(error){
+		console.error(error);
+		return next(error);
+	};
+};
+
+// 특정 사용자가 제출한 모든 과제 조회
+exports.userAllAssignment = async (req, res, next) => {
+	try{
+		const myId = req.params.email;
+		const allAssignment = await Assignment.findAll({
+			where: { uploader: myId }
+		});
+
+		return res.json(allAssignment);
+	}catch(error){
+		console.error(error);
+		return next(error);
+	};
+};
+
+// 특정 사용자가 제출한 특정 과제함의 과제 조회
+exports.userAssignment = async (req, res, next) => {
+	try{
+		const myId = req.params.email;
+		const boxId = req.params.boxId;
+		const assignment = await Assignment.findAll({
+			where: { 
+				uploader: myId,
+				boxId: boxId,
+			},
+			include: [{
+				model: User,
+				attributes: ['userNick'],
+				required: false,
+			}]	
+		});
+
+		return res.json(assignment);
+	}catch(error){
+		console.error(error);
+		return next(error);
+	};
+};
+
+
+// 스터디 회의록 조회
+exports.studyLog = async (req, res, next) => {
+	try{
+		const log = req.params.log;
+		const content = await StudyLog.findOne({
+			attributes: ['content'],
+			where: { log }
+		});
+
+		return res.json(content);
 	}catch(error){
 		console.error(error);
 		return next(error);
