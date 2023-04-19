@@ -10,7 +10,7 @@ const {
 	studyLog, getMeetId, getAttendance
 } = require('../controllers/api');
 const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment, checkAttendance } = require('../controllers/apiStudyGroup');
-const { getEvent, createEvent } = require('../controllers/apiEvent');
+const { getEvent, getMeetInfo, createEvent } = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
 const apiChat = require('../controllers/apiChat');
 const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
@@ -118,6 +118,9 @@ router.post('/assignmentBox', createBox);
 
 // GET /api/:gpid/event (이벤트 정보 가져오기)
 router.get('/:gpId/event', getEvent);
+
+// GET /api/event/:log (특정 회의 정보 가져오기)
+router.get('/event/:log', getMeetInfo);
 
 // POST /api/event (이벤트 생성)
 router.post('/event', createEvent);

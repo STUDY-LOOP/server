@@ -200,6 +200,7 @@ exports.getMeetId = async (req, res, next) => {
 		const groupId = group.groupId
 
 		var today = new Date();
+		
 		// dateTimeString 코드 정리
 		var year = today.getFullYear();
 		var month = ('0' + (today.getMonth() + 1)).slice(-2);
@@ -207,9 +208,6 @@ exports.getMeetId = async (req, res, next) => {
 		const dateString = year + '-' + month + '-' + day; //YYYY-MM-DD
 		const dateStart = dateString + ' 00:00:00'
 		const dateEnd = dateString + ' 23:59:59'
-
-		// console.log('start: ', dateStart);
-		// console.log('end: ', dateEnd);
 
 		const event = await Event.findOne({
 			attributes: ['id'],
