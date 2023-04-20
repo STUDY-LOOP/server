@@ -141,7 +141,7 @@ module.exports = router;
 // GET /api/:gpId/meet (특정 회의 조회)
 router.get('/:gpId/meet', getMeetId);
 
-// GET /api/:gpId/attendance/:log (특정 회의 출석 조회)
+// GET /api/attendance/:log (특정 회의 출석 조회)
 router.get('/attendance/:log', getAttendance);
 
 // POST /api/:gpId/check-attendance/:meetId (출석 체크))

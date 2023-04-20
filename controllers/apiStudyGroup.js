@@ -266,7 +266,7 @@ exports.checkAttendance = async (req, res, next) => {
 		const eventId = req.params.meetId;
 		
 		const { userNick, enterDate } = req.body;
-
+		// console.log('eventId: ',eventId);
 		const event = await Event.findOne({
 			attributes: ['date_start'],
 			where: {
@@ -279,7 +279,7 @@ exports.checkAttendance = async (req, res, next) => {
 	
 		var attendState = -1; // 결석
 		const late = (dateE - dateM) / 1000 / 60;
-
+		
 		console.log('지각? ', late);
 		 
 		if (late <= 5) {

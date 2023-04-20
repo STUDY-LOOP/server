@@ -1,4 +1,4 @@
-const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog, Attendance } = require('../models');
+const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog, Event, Attendance } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -196,29 +196,35 @@ exports.studyLog = async (req, res, next) => {
 exports.getMeetId = async (req, res, next) => {
 	try {
 		const groupPublicId = req.params.gpId;
-		const group = await StudyGroup.findOne({ where: { groupPublicId } });
-		const groupId = group.groupId
+		const group = await StudyGroup.findOne({
+			where: { groupPublicId } });
 
 		var today = new Date();
+		var tomorrow = new Date();
+		tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1));
 		
 		// dateTimeString 코드 정리
 		var year = today.getFullYear();
 		var month = ('0' + (today.getMonth() + 1)).slice(-2);
 		var day = ('0' + today.getDate()).slice(-2);
-		const dateString = year + '-' + month + '-' + day; //YYYY-MM-DD
-		const dateStart = dateString + ' 00:00:00'
-		const dateEnd = dateString + ' 23:59:59'
 
-		const event = await Event.findOne({
+		const dateString = year + '-' + month + '-' + day; //YYYY-MM-DD
+		
+		const dateStart = dateString + 'T00:00:00.000Z'
+		const dateEnd = dateString + 'T23:59:59.000Z'
+
+		const meet = await Event.findOne({
 			attributes: ['id'],
 			where: {
-				groupId: groupId, //group id
-				event_type: '0', //회의
-				date_start: { [Op.between]: [dateStart, dateEnd] }		
+				groupId: group.groupId, //group id
+				event_type: '0', //회의					
+				date_start: {
+					[Op.between]: [dateStart, dateEnd] // 쿼리 실행 시 +9시간
+				}		
 			},
 		});
-		
-		return res.json(event.id);
+
+		return res.json(meet.id);
 	} catch (error) {
 		return next(error);
 	}
