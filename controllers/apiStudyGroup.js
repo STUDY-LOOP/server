@@ -10,7 +10,11 @@ const Op = Sequelize.Op;
 
 // 스터디 생성
 exports.create = async (req, res, next) => {
-	const { groupName, rule, scheduleDay, scheduleHour, scheduleMinute } = req.body;
+	const { 
+		groupName, groupDescription,
+		rule, lateTime, lateFee, absentTime, absentFee,
+		scheduleDay, scheduleTime
+	} = req.body;
 	const groupId = uuidv4();
 	const groupLeader = req.session.passport.user;
 	try {
@@ -20,16 +24,20 @@ exports.create = async (req, res, next) => {
 			groupPublicId,
 			groupName,
 			groupLeader,
+			groupDescription,
 		});
 		await StudySchedule.create({
 		    groupId,
 		    scheduleDay,
-		    scheduleHour, 
-		    scheduleMinute,
+			scheduleTime,
 		});
 		await StudyRule.create({
 		    groupId,
 		    rule,
+			lateTime, 
+			lateFee, 
+			absentTime, 
+			absentFee,
 		});
 	} catch(error) {
 		console.error(error);
