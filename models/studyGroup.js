@@ -22,6 +22,10 @@ module.exports = class StudyGroup extends Sequelize.Model{
                 type: Sequelize.STRING(40),
                 allowNull: false,
             },
+            groupDescription: {
+                type: Sequelize.STRING,
+                allowNull: true,
+            },
         }, {
             sequelize,
             timestamps: true,

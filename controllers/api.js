@@ -6,7 +6,7 @@ const Op = Sequelize.Op;
 exports.findAll = async (req, res, next) => {
 	try {
 		const studies = await StudyGroup.findAll({ 
-			attributes: ['groupPublicId', 'groupName', 'groupLeader'],
+			attributes: ['groupPublicId', 'groupName', 'groupLeader', 'groupDescription'],
 		});
 
 		res.json(studies);
@@ -24,10 +24,10 @@ exports.studyInfo = async (req, res, next) => {
 
 		const group = await StudyGroup.findOne({
 			where: { groupPublicId: groupPublicId },
-			attributes: ['groupPublicId', 'groupName', 'groupLeader'],
+			attributes: ['groupPublicId', 'groupName', 'groupLeader', 'groupDescription'],
 			include: [
-				{ model: StudyRule, attributes: ['rule'] },
-				{ model: StudySchedule, attributes: ['scheduleDay', 'scheduleHour', 'scheduleMinute'] },
+				{ model: StudyRule, attributes: ['rule', 'lateTime', 'lateFee', 'absentTime', 'absentFee'] },
+				{ model: StudySchedule, attributes: ['scheduleDay', 'scheduleTime'] },
 				{ model: User, attributes: ['userNick'] }
 			],
 		});

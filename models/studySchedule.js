@@ -9,16 +9,12 @@ module.exports = class StudySchedule extends Sequelize.Model{
             },
             scheduleDay: {
                 type: Sequelize.STRING(10),
-                allowNull: false,
+                allowNull: true,
             },
-            scheduleHour: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
+            scheduleTime: {
+                type: Sequelize.TIME,
+                allowNull: true,
             },
-            scheduleMinute: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-            }
         }, {
             sequelize,
             timestamps: false,
