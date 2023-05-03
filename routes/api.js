@@ -5,42 +5,66 @@ const multer = require('multer');
 const path = require('path');
 
 const {
-	findAll, studyInfo, studyMemberInfo, studyAssignment, 
-	userInfo, userAsLeader, userAsMember, userAllAssignment, userAssignment, 
-	studyLog, getMeetId, getAttendance
+  findAll,
+  studyInfo,
+  studyMemberInfo,
+  studyAssignment,
+  userInfo,
+  userAsLeader,
+  userAsMember,
+  userAllAssignment,
+  userAssignment,
+  studyLog,
+  getMeetId,
+  getAttendance,
 } = require('../controllers/api');
-const { create, joinGroup, quit, createBox, submitAssignment, getAssignment, deleteAssignment, studyOneAssignment, checkAttendance } = require('../controllers/apiStudyGroup');
-const { getEvent, getMeetInfo, createEvent } = require('../controllers/apiEvent');
+const {
+  create,
+  joinGroup,
+  quit,
+  createBox,
+  submitAssignment,
+  getAssignment,
+  deleteAssignment,
+  studyOneAssignment,
+  checkAttendance,
+} = require('../controllers/apiStudyGroup');
+const {
+  getEvent,
+  getMeetInfo,
+  createEvent,
+} = require('../controllers/apiEvent');
 const { join, login, logout } = require('../controllers/apiAuth');
 const apiChat = require('../controllers/apiChat');
+const apiUser = require('../controllers/apiUser');
 const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 
 /* --- multer setting --- */
 try {
-	fs.readdirSync('public/uploads');
+  fs.readdirSync('public/uploads');
 } catch (error) {
-	console.error('uploads 폴더 생성');
-	fs.mkdirSync('public/uploads');
+  console.error('uploads 폴더 생성');
+  fs.mkdirSync('public/uploads');
 }
 
 const upload = multer({
-	storage: multer.diskStorage({
-		destination(req, file, cb) {
-			cb(null, 'public/uploads/');
-		},
-		filename(req, file, cb) {
-			const ext = path.extname(file.originalname);
-			cb(null, path.basename(file.originalname, ext) + '-' + Date.now() + ext);
-		},
-	}),
-	limits: { fileSize: 10 * 1024 * 1024 },
+  storage: multer.diskStorage({
+    destination(req, file, cb) {
+      cb(null, 'public/uploads/');
+    },
+    filename(req, file, cb) {
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(file.originalname, ext) + '-' + Date.now() + ext);
+    },
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 const router = express.Router();
 
 router.use((req, res, next) => {
-	res.locals.user = req.user;
-	next();
+  res.locals.user = req.user;
+  next();
 });
 
 /* --- API(로그인) --- */
@@ -53,8 +77,6 @@ router.post('/user/login', login);
 
 // GET /api/logout (로그아웃)
 router.get('/user/logout', logout);
-
-
 
 /* --- API(get) --- */
 
@@ -83,8 +105,6 @@ router.get('/user/:email/assignment/:boxId', userAssignment);
 // GET /api/:log (스터디 회의록 조회)
 router.get('/log/:log', studyLog);
 
-
-
 /* --- API(스터디) --- */
 
 // POST /api/group (스터디 생성)
@@ -95,8 +115,6 @@ router.post('/group/member', joinGroup);
 
 // POST /api/member (스터디 탈퇴)
 router.delete('/member', quit);
-
-
 
 /* --- API(과제) --- */
 
@@ -112,8 +130,6 @@ router.post('/assignment', upload.single('fileData'), submitAssignment);
 // POST /api/assignmentBox (과제함 생성)
 router.post('/assignmentBox', createBox);
 
-
-
 /* --- API(캘린더) --- */
 
 // GET /api/:gpid/event (이벤트 정보 가져오기)
@@ -125,16 +141,12 @@ router.get('/event/:log', getMeetInfo);
 // POST /api/event (이벤트 생성)
 router.post('/event', createEvent);
 
-
-
 /* --- API(채팅) --- */
 
 // POST /api/chat (채팅 저장하기)
 router.post('/chat', apiChat.saveChat);
 
 module.exports = router;
-
-
 
 /* --- API(출석) --- */
 
@@ -146,3 +158,8 @@ router.get('/attendance/:log', getAttendance);
 
 // POST /api/:gpId/check-attendance/:meetId (출석 체크))
 router.post('/:gpId/check-attendance/:meetId', checkAttendance);
+
+/* -- API(마이페이지) -- */
+
+// POST /api/user/:email/modify (개인정보 수정)
+router.post('/user/:email/modify', apiUser.modifyUser);
