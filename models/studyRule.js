@@ -7,6 +7,22 @@ module.exports = class StudyRule extends Sequelize.Model{
                 type: Sequelize.TEXT,
                 allowNull: false,
             },
+            lateTime: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+            },
+            lateFee: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+            },
+            absentTime: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+            },
+            absentFee: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+            },
         }, {
             sequelize,
             timestamps: false,
