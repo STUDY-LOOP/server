@@ -214,17 +214,17 @@ exports.getMeetId = async (req, res, next) => {
 		const dateEnd = dateString + 'T23:59:59.000Z'
 
 		const meet = await Event.findOne({
-			attributes: ['id'],
-			where: {
+			attributes: ['id', 'date_start'],
+			where: { 
 				groupId: group.groupId, //group id
-				event_type: '0', //회의					
+				event_type: '0', 	// 회의		
 				date_start: {
 					[Op.between]: [dateStart, dateEnd] // 쿼리 실행 시 +9시간
 				}		
 			},
 		});
-
-		return res.json(meet.id);
+		// console.log(meet);
+		return res.json(meet);
 	} catch (error) {
 		return next(error);
 	}
@@ -233,7 +233,6 @@ exports.getMeetId = async (req, res, next) => {
 // 특정 회의 출석 조회
 exports.getAttendance = async (req, res, next) => {
 	try {
-		// const groupPublicId = req.params.gpId;
 		const meetId = req.params.log;
 
 		// 출석 정보 조회 
@@ -241,12 +240,10 @@ exports.getAttendance = async (req, res, next) => {
 			raw: true,
 			attributes: ['userNick', 'attendState'],
 			where: {
-				// groupPublicId: groupPublicId,
 				eventId: meetId
 			}
 		});
 
-		console.log(attendance);
 		return res.json(attendance);
 
 	} catch (error) {
