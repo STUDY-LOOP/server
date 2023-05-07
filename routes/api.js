@@ -22,6 +22,7 @@ const {
   create,
   joinGroup,
   quit,
+  update,
   createBox,
   submitAssignment,
   getAssignment,
@@ -110,11 +111,15 @@ router.get('/log/:log', studyLog);
 // POST /api/group (스터디 생성)
 router.post('/group', create);
 
+// Patch /api/:gpId/info (스터디 정보 수정)
+router.post('/:gpId/info', update);
+
 // POST /api/group/member (스터디 가입)
 router.post('/group/member', joinGroup);
 
-// POST /api/member (스터디 탈퇴)
+// DELETE /api/member (스터디 탈퇴)
 router.delete('/member', quit);
+
 
 /* --- API(과제) --- */
 

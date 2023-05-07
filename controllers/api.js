@@ -31,7 +31,7 @@ exports.studyInfo = async (req, res, next) => {
 				{ model: User, attributes: ['userNick'] }
 			],
 		});
-
+		console.log(group);
 		res.json(group);
 
 	} catch (error) {
