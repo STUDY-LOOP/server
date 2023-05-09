@@ -27,7 +27,6 @@ exports.loadChat = async (req, res, next) => {
 
 exports.loadNotice = async (req, res, next) => {
   try {
-    console.log('이건 실행이 되는거니?????????');
     const groupPublicId = req.params.gpId;
     const group = await StudyGroup.findOne({ where: { groupPublicId } });
     const notices = await Chat.findAll({
