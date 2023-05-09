@@ -2,39 +2,80 @@ const { User, StudyGroup, Chat } = require('../models');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-/* exports.joinChatRoom = async (req, res, next) => {
+exports.loadChat = async (req, res, next) => {
   try {
-    io.on('connection', (socket) => {
-      console.log(socket.rooms);
-      socket.join(`${gpId}`);
-      console.log(socket.rooms);
+    const groupPublicId = req.params.gpId;
+    const group = await StudyGroup.findOne({ where: { groupPublicId } });
+    const chats = await Chat.findAll({
+      raw: true,
+      where: { groupId: group.groupId, notice: 0 },
+      attributes: [
+        //chatId는 모르겠다
+        'userNick',
+        'notice',
+        'content',
+        'datetime',
+      ],
+    });
+
+    return res.json(chats);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+exports.loadNotice = async (req, res, next) => {
+  try {
+    console.log('이건 실행이 되는거니?????????');
+    const groupPublicId = req.params.gpId;
+    const group = await StudyGroup.findOne({ where: { groupPublicId } });
+    const notices = await Chat.findAll({
+      raw: true,
+      where: { groupId: group.groupId, notice: 1 },
+      attributes: [
+        //chatId는 모르겠다
+        'userNick',
+        'notice',
+        'content',
+        'datetime',
+      ],
+    });
+
+    return res.json(notices);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+exports.saveChat = async (req, res, next) => {
+  try {
+    const groupPublicId = req.params.gpId;
+    const group = await StudyGroup.findOne({ where: { groupPublicId } });
+    await Chat.create({
+      groupId: group.groupId,
+      email: req.body.email,
+      notice: 0,
+      content: req.body.content,
+      userNick: req.body.userNick,
     });
   } catch (error) {
     console.error(error);
     next(error);
   }
-}; */
+};
 
-exports.saveChat = async (req, res, next) => {
+exports.saveNotice = async (req, res, next) => {
   try {
-    const groupPublicId = req.body.gpId;
-    //console.log(`그룹 아이디 확인: ${groupPublicId}`);
-    const values = groupPublicId.split('=');
-    //console.log(`벨류 값 확인: ${values}`);
-    const group_dev = await StudyGroup.findOne({
-      where: {
-        groupName: values[0],
-        groupId: { [Op.like]: values[1] + '%' },
-      },
-    });
-    //console.log(`그룹 데브 값 확인: ${group_dev.groupId}`);
-    //console.log(`콘텐트 값 확인: ${req.body.content}`);
-    //console.log(`이메일 값 확인: ${req.body.email}`);
+    const groupPublicId = req.params.gpId;
+    const group = await StudyGroup.findOne({ where: { groupPublicId } });
     await Chat.create({
-      groupId: group_dev.groupId,
+      groupId: group.groupId,
       email: req.body.email,
-      notice: 0,
+      notice: 1,
       content: req.body.content,
+      userNick: req.body.userNick,
     });
   } catch (error) {
     console.error(error);

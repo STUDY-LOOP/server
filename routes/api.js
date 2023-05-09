@@ -143,10 +143,17 @@ router.post('/event', createEvent);
 
 /* --- API(채팅) --- */
 
-// POST /api/chat (채팅 저장하기)
-router.post('/chat', apiChat.saveChat);
+// POST /api/:gpid/chat (채팅 저장하기)
+router.post('/:gpId/chat', apiChat.saveChat);
 
-module.exports = router;
+// POST /api/:gpid/notice (공지 저장하기)
+router.post('/:gpId/notice', apiChat.saveNotice);
+
+// GET /api/:gpid/chat (채팅 불러오기)
+router.get('/:gpId/chat', apiChat.loadChat);
+
+// GET /api/:gpid/notice (공지 불러오기)
+router.get('/:gpId/notice', apiChat.loadNotice);
 
 /* --- API(출석) --- */
 
@@ -163,3 +170,5 @@ router.post('/:gpId/check-attendance/:meetId', checkAttendance);
 
 // POST /api/user/:email/modify (개인정보 수정)
 router.post('/user/:email/modify', apiUser.modifyUser);
+
+module.exports = router;
