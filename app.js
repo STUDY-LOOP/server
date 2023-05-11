@@ -129,20 +129,6 @@ app.use((err, req, res, next) => {
 });
 
 /* --- chat, video chat --- */
-/* io.on('connection', (socket) => {
-  console.log('app.js 소켓 코드 실행');
-
-  socket.on('msg', (data) => {
-	var keys = Object.keys(socket.rooms);
-	for (var i = 0; i < keys.length; i++) {
-	  io.to(socket.rooms[keys[i]]).emit('msg', data);
-	}
-  });
-});
-
-io.on('disconnect', (socket) => {
-  console.log('Client disconnected');
-}); */
 
 io.on('connection', (socket) => {
   //study main chat
@@ -171,16 +157,14 @@ io.on('connection', (socket) => {
 
     socket.join(roomId);
     socket.to(roomId).emit('new-user-connected', { id: id, name: name });
-
-    //chat
-    socket.on('new-message', (sender, message, roomId, done) => {
-      socket.to(roomId).emit('new-message', sender, `${name}: ${message}`);
-      done(); //triggers function located at frontend
-    });
-
-    socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', id);
-      socket.to(roomId).emit('update-video', { id: id, name: name });
-    });
   });
+  //chat
+  socket.on('new-message', (sender, content, datetime, roomId) => {
+    io.to(roomId).emit('new-message', sender, content, datetime);
+  });
+
+  /* socket.on('disconnect', (roomId, userId, userName) => {
+    socket.to(roomId).emit('user-disconnected', userId);
+    socket.to(roomId).emit('update-video', { id: userId, name: userName });
+  }); */
 });

@@ -15,6 +15,7 @@ const {
   userAllAssignment,
   userAssignment,
   studyLog,
+  editStudyLog,
   getMeetId,
   getAttendance,
 } = require('../controllers/api');
@@ -120,7 +121,6 @@ router.post('/group/member', joinGroup);
 // DELETE /api/member (스터디 탈퇴)
 router.delete('/member', quit);
 
-
 /* --- API(과제) --- */
 
 // GET /api/download/:filename (과제 다운로드)
@@ -175,5 +175,10 @@ router.post('/:gpId/check-attendance/:meetId', checkAttendance);
 
 // POST /api/user/:email/modify (개인정보 수정)
 router.post('/user/:email/modify', apiUser.modifyUser);
+
+/* -- API(스터디로그) -- */
+
+// POST /api/:log (회의록 수정)
+router.post('/log/:log/modify', editStudyLog);
 
 module.exports = router;
