@@ -21,10 +21,39 @@ exports.createEvent = async (req, res, next) => {
 
 		// 일정이 스터디인 경우 -> 스터디 로그 생성
 		if (event_type === '0') {
+			// console.log('log: ', event.id);
 			await StudyLog.create({
 				groupId: group.groupId,
 				log: event.id,
 			});
+			// return event.id
+		}
+
+		// 일정이 스터디인 경우 -> 출석부 미입력 행 생성
+		if (event_type === '0') {
+			console.log('att part');
+			const members = await group.getUsers({ attributes: ['email'] });
+
+			const leader = await StudyGroup.findOne({
+				attributes: ['groupLeader'],
+				where: { groupPublicId: gpId }
+			})
+
+			console.log('members: ', members);
+			// members에 leader 추가
+			members.push(leader);
+
+			await Promise.all(members.map(async (member) => {
+				const now = new Date();
+				const memberId = member.email;
+				await Attendance.create({
+					email: memberId,
+					groupId: group.groupId,
+					eventId: event.id,
+					attendState: 2,
+					enterDate: now,
+				});
+			}));
 		}
 
 		return true;
@@ -94,7 +123,7 @@ exports.EventCalc = async (req, res, next) => {
 exports.getMeetInfo = async (req, res, next) => {
 	try {
 		const eventId = req.params.log;
-		
+
 		const meetInfo = await Event.findAll({
 			raw: true,
 			where: { id: eventId },

@@ -47,5 +47,10 @@ module.exports = class User extends Sequelize.Model{
             sourceKey: 'email',
             onDelete: 'cascade',
         });
+        db.User.hasMany(db.Attendance, {
+            foreignKey: 'email',
+            sourceKey: 'email',
+            onDelete: 'cascade',    
+        });
     }
 };

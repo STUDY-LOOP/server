@@ -8,27 +8,27 @@ module.exports = class Attendance extends Sequelize.Model{
 				primaryKey : true,
 				autoIncrement : true
 			},
+            email: {
+                type: Sequelize.STRING(40),
+                allowNull: false,
+            },
+            groupId: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
             eventId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
             },
-            groupPublicId: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
-            userNick: {
-                type: Sequelize.STRING(40),
-                allowNull: false,
-            },
-            enterDate: {
-                type: Sequelize.DATE, ////YYYY-MM-DDTHH:MM:SSZ
-                allowNull: true,
-            },
             attendState: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                defaultValue: -1, //지각
-            },
+                defaultValue: 2, // 미입력
+            },        
+            enterDate: {
+                type: Sequelize.DATE, // YYYY-MM-DDTHH:MM:SSZ
+                allowNull: true,
+            },       
         }, {
             sequelize,
             timestamps: false,
@@ -42,12 +42,20 @@ module.exports = class Attendance extends Sequelize.Model{
     }
 
     static associate(db){
-        // foreignKey: event id
+        db.Attendance.belongsTo(db.User, {
+            foreignKey: 'email',
+            targetKey: 'email',
+            onDelete: 'cascade', 
+        });
+        db.Attendance.belongsTo(db.StudyGroup, {
+            foreignKey: 'groupId',
+            sourceKey: 'groupId',
+            onDelete: 'cascade',
+        });
         db.Attendance.belongsTo(db.Event, {
             foreignKey: 'eventId',
             sourceKey: 'id',
             onDelete: 'cascade',
-            onUpdate: 'cascade',
         });
     }
 };
