@@ -1,4 +1,4 @@
-const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog, Event, Attendance } = require('../models');
+const { User, StudyGroup, StudyRule, StudySchedule, AssignmentBox, Assignment, StudyLog, Event, Attendance, StudyType } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -7,6 +7,8 @@ exports.findAll = async (req, res, next) => {
 	try {
 		const studies = await StudyGroup.findAll({ 
 			attributes: ['groupPublicId', 'groupName', 'groupLeader', 'groupDescription'],
+			// order: Sequelize.random(),
+			order: Sequelize.literal('rand()'),
 		});
 
 		res.json(studies);
@@ -255,3 +257,44 @@ exports.getAttendance = async (req, res, next) => {
 	}
 };
 
+/* 검색 결과 */
+exports.searchResult = async (req, res, next) => {
+	try {
+		const keyword = req.params.keyword;
+		const types = ['어학', '취업', '개발', '기타', '취미/교양', '고시/공시'];
+		let flag = [false, false, false, false, false, false];
+
+		for (i=0; i<6; i++) {
+			flag[i] = types[i].includes(keyword)
+
+			// interest #(flag의 true 인덱스) == true
+		}
+
+		// 출석 정보 조회 
+		const result = await StudyGroup.findAll({
+			where: {
+				[Sequelize.Op.or]: [{
+					groupName: { [Op.like]: "%" + keyword + "%" },
+				}, {
+					groupDescription: { [Op.like]: "%" + keyword + "%" },
+				}],
+			},
+			// include: [{
+			// 	model: StudyType,
+			// 	where: {
+			// 		[Sequelize.Op.or]: [{
+			// 			interest0: true
+			// 		}, {
+			// 			groupDescription: { [Op.like]: "%" + keyword + "%" },
+			// 		}],
+			// 	}
+			// }]	
+		});
+
+		return res.json(result);
+
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};

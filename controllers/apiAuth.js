@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const User = require('../models/user');
+const { User, UserInterest } = require('../models');
 
 exports.join = async (req, res, next) => {
-	const { email, userNick, userPW } = req.body;
+	const { email, userNick, userPW, userName } = req.body;
 	try {
 		const exUser = await User.findOne({ where: { email } });
 		if (exUser) {
@@ -15,6 +15,7 @@ exports.join = async (req, res, next) => {
 				email,
 				userNick,
 				userPW: hash,
+				userName,
 			});
 			return res.status(200).send({ code: 0 });
 		}
@@ -22,6 +23,29 @@ exports.join = async (req, res, next) => {
 		console.error(error);
 		return next(error);
 	}
+};
+
+exports.userInterest = async (req, res, next) => {
+	const { email, interest0, interest1, interest2, interest3, interest4, interest5 } = req.body;
+
+	console.log(email, interest0, interest1, interest2, interest3, interest4, interest5)
+	
+	try {
+		await UserInterest.create({
+			email,
+			interest0,
+			interest1,
+			interest2,
+			interest3,
+			interest4,
+			interest5,
+		});
+		return res.status(200).send({ code: 0 });
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+	
 };
 
 exports.login = (req, res, next) => {
@@ -41,7 +65,7 @@ exports.login = (req, res, next) => {
 				return next(loginError);
 			}
 			console.log("로그인 성공!");
-			const userData = await User.findOne({ where: { id: user.id } });
+			const userData = await User.findOne({ where: { email: user.email } });
 			return res.status(200).send({
 				code: 0,
 				message: "request success",
