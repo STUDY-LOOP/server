@@ -11,12 +11,14 @@ const {
 	studyInfo,
 	studyMemberInfo,
 	studyAssignment,
+  studyAttendance,
 	userInfo,
 	userAsLeader,
 	userAsMember,
 	userAllAssignment,
 	userAssignment,
 	studyLog,
+  editStudyLog,
 	getMeetId,
 	getAttendance,
 	searchResult,
@@ -25,11 +27,13 @@ const {
 	create,
 	joinGroup,
 	quit,
+  update,
 	createBox,
 	submitAssignment,
 	getAssignment,
 	deleteAssignment,
 	studyOneAssignment,
+  createAttendance,
 	checkAttendance,
 } = require('../controllers/apiStudyGroup');
 const {
@@ -103,6 +107,9 @@ router.get('/:gpId/assignment', studyAssignment);
 
 // GET /api/:gpId/:boxId (특정 스터디 특정 과제 조회)
 router.get('/:boxId', studyOneAssignment);
+
+// GET /api/:gpId/assignment (특정 스터디 전체 출석 조회)
+router.get('/:gpId/attendance', studyAttendance);
 
 // GET /api/:gpId/:boxId (특정 사용자 정보 조회)
 router.get('/user/:email/info', userInfo);
@@ -191,7 +198,10 @@ router.get('/:gpId/meet', getMeetId);
 // GET /api/attendance/:log (특정 회의 출석 조회)
 router.get('/attendance/:log', getAttendance);
 
-// POST /api/:gpId/check-attendance/:meetId (출석 체크))
+// POST /api/:gpId/create-attendance/:meetId (출석 생성)
+router.post('/:gpId/create-attendance/:meetId', createAttendance);
+
+// POST /api/:gpId/check-attendance/:meetId (출석 체크)
 router.post('/:gpId/check-attendance/:meetId', checkAttendance);
 
 /* -- API(마이페이지) -- */
@@ -203,5 +213,4 @@ router.post('/user/:email/modify', apiUser.modifyUser);
 
 // POST /api/:log (회의록 수정)
 router.post('/log/:log/modify', editStudyLog);
-
 module.exports = router;

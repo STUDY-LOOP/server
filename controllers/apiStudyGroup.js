@@ -87,56 +87,56 @@ exports.update = async (req, res, next) => {
         await StudyGroup.update({
           groupDescription: updatedValue[key],
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
       case 'scheduleDay':
         await StudySchedule.update({
           scheduleDay: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
       case 'scheduleTime':
         await StudySchedule.update({
           scheduleTime: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
       case 'rule':
         await StudyRule.update({
           rule: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
       case 'lateTime':
         await StudyRule.update({
           lateTime: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
       case 'lateFee':
         await StudyRule.update({
           lateFee: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
       case 'absentTime':
         await StudyRule.update({
           absentTime: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
-      case 'absentFee': 
+      case 'absentFee':
         await StudyRule.update({
           absentFee: updatedValue[key]
         }, {
-          where: {groupId: groupId}
+          where: { groupId: groupId }
         });
         break;
     }
@@ -379,6 +379,40 @@ exports.studyOneAssignment = async (req, res, next) => {
 
 /* --- 출석부 --- */
 
+// 출석 생성
+exports.createAttendance = async (req, res, next) => {
+  console.log('create api run');
+  try {
+    const gpId = req.params.gpId;
+    const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
+    const groupId = group.groupId;
+
+    const eventId = req.params.meetId;
+
+    const members = await StudyMember.findAll({
+      attributes: ['userId'],
+      where: {
+        StudyGroupGroupId: groupId
+      },
+      include: [{
+        model: User,
+        attributes: ['email']
+      }]
+    })
+
+    const leader = await StudyGroup.findOne({
+      attributes: ['groupLeader'],
+      where: {
+        groupId: groupId
+      }
+    })
+
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+};
+
 // 출석 체크
 exports.checkAttendance = async (req, res, next) => {
 	try {
@@ -388,14 +422,14 @@ exports.checkAttendance = async (req, res, next) => {
 
 		const eventId = req.params.meetId;
 
-		const { userNick, enterDate } = req.body;
-		// console.log('eventId: ',eventId);
-		const event = await Event.findOne({
-			attributes: ['date_start'],
-			where: {
-				id: eventId,
-			},
-		});
+    const { email, enterDate } = req.body;
+
+    const event = await Event.findOne({
+      attributes: ['date_start'],
+      where: {
+        id: eventId,
+      },
+    });
 
 		const dateE = new Date(enterDate);
 		const dateM = new Date(event.date_start);
@@ -403,38 +437,35 @@ exports.checkAttendance = async (req, res, next) => {
 		var attendState = -1; // 결석
 		const late = (dateE - dateM) / 1000 / 60;
 
-		console.log('지각? ', late);
+    if (late <= 5) {
+      attendState = 0; // 출석
+      console.log('출석');
+    } else if (late < 16) {
+      // 5 < late < 16
+      attendState = 1; // 지각
+      console.log('지각');
+    } else {
+      attendState = -1;
+    }
 
-		if (late <= 5) {
-			attendState = 0; // 출석
-			console.log('출석');
-		} else if (late < 16) {
-			// 5 < late < 16
-			attendState = 1; // 지각
-			console.log('지각');
-		} else {
-			attendState = -1;
-		}
+    await Attendance.update(
+        {
+          email: email,
+          groupId: groupId,
+          eventId: eventId,
+          enterDate: enterDate,
+          attendState: attendState
+        },
+        {
+          where: {
+            email: email,
+            eventId: eventId
+          }
+        }
+      )
 
-		const [attendance, created] = await Attendance.findOrCreate({
-			where: {
-				eventId: eventId,
-				userNick: userNick,
-			},
-			defaults: {
-				eventId: eventId,
-				groupPublicId: groupPublicId,
-				userNick: userNick,
-				enterDate: enterDate,
-				attendState: attendState,
-			},
-		});
-		if (created) {
-			console.log(created);
-		} else {
-		}
-	} catch (error) {
-		console.error(error);
-		return next(error);
-	}
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
 };
