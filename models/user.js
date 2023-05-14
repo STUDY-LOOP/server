@@ -5,8 +5,13 @@ module.exports = class User extends Sequelize.Model{
         return super.init({
             email: {
                 type: Sequelize.STRING(40),
-                allowNull: true,
+                allowNull: false,
                 unique: true,
+                primaryKey: true,
+            },
+            userName: {
+                type: Sequelize.STRING(40),
+                allowNull: false,
             },
             userNick: {
                 type: Sequelize.STRING(30),
@@ -34,6 +39,11 @@ module.exports = class User extends Sequelize.Model{
         });
         db.User.hasMany(db.Assignment, {
             foreignKey: 'uploader',
+            sourceKey: 'email',
+            onDelete: 'cascade',
+        });
+        db.User.hasOne(db.UserInterest, {
+            foreignKey: 'email',
             sourceKey: 'email',
             onDelete: 'cascade',
         });

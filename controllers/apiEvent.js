@@ -1,4 +1,4 @@
-const { User, StudyGroup, Event, StudyLog } = require('../models');
+const { User, StudyGroup, Event, StudyLog, AssignmentBox, Assignment, Attendance } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -51,6 +51,37 @@ exports.getEvent = async (req, res, next) => {
 				'boxId',
 				'event_des',
 			]
+		});
+
+		return res.json(events);
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
+
+
+exports.EventCalc = async (req, res, next) => {
+	try {
+		const gpId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
+
+		const events = await Event.findAll({
+			where: {
+				groupId: group.groupId,
+				[Op.or]: [{
+					event_type: '0'
+				}, {
+					event_type: '1'
+				}],
+			},
+			include: [{  
+				model: AssignmentBox,
+				include: [{ model: Assignment }],
+			},{
+				// 진서지수진서지수진서지수
+				model: Attendance,
+			}], 
 		});
 
 		return res.json(events);

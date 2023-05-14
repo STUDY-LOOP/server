@@ -55,6 +55,12 @@ module.exports = class StudyGroup extends Sequelize.Model{
             sourceKey: 'groupId',
             onDelete: 'cascade',
         });
+        // 스터디:타입 = 1:1
+        db.StudyGroup.hasOne(db.StudyType, {
+            foreignKey: 'groupId',
+            sourceKey: 'groupId',
+            onDelete: 'cascade',
+        });
         // 스터디:스터디일정 = 1:N
         db.StudyGroup.hasMany(db.StudySchedule, {
             foreignKey: 'groupId',
