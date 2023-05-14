@@ -17,6 +17,10 @@ module.exports = class Chat extends Sequelize.Model {
           type: Sequelize.STRING(40),
           primaryKey: true,
         },
+        userNick: {
+          type: Sequelize.STRING(30),
+          allowNull: false,
+        },
         notice: {
           type: Sequelize.BOOLEAN,
           allowNull: false,

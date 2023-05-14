@@ -67,6 +67,83 @@ exports.create = async (req, res, next) => {
 	}
 };
 
+// 스터디 정보 수정
+exports.update = async (req, res, next) => {
+  const groupPublicId = req.params.gpId;
+
+  const group = await StudyGroup.findOne({
+    where: { groupPublicId: groupPublicId },
+    attributes: ['groupId']
+  });
+
+  const groupId = group.groupId;
+  const updatedValue = req.body;
+
+  const key = Object.keys(updatedValue);
+
+  Object.keys(updatedValue).forEach(async (key) => {
+    switch (key) {
+      case 'groupDescription':
+        await StudyGroup.update({
+          groupDescription: updatedValue[key],
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'scheduleDay':
+        await StudySchedule.update({
+          scheduleDay: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'scheduleTime':
+        await StudySchedule.update({
+          scheduleTime: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'rule':
+        await StudyRule.update({
+          rule: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'lateTime':
+        await StudyRule.update({
+          lateTime: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'lateFee':
+        await StudyRule.update({
+          lateFee: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'absentTime':
+        await StudyRule.update({
+          absentTime: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+      case 'absentFee': 
+        await StudyRule.update({
+          absentFee: updatedValue[key]
+        }, {
+          where: {groupId: groupId}
+        });
+        break;
+    }
+  });
+
+};
+
 // 스터디 가입
 exports.joinGroup = async (req, res, next) => {
 	try {
