@@ -3,12 +3,26 @@ const Sequelize = require('sequelize');
 module.exports = class Assignment extends Sequelize.Model{
     static init(sequelize){
         return super.init({
-            boxId: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
+            id: {
+				type : Sequelize.INTEGER,
+				primaryKey : true,
+				autoIncrement : true
+			},
             uploader: {
                 type: Sequelize.STRING(40),
+                allowNull: false,
+            },
+            eventId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+            },
+            submitState: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: 2, // 미입력
+            },
+            boxId: {
+                type: Sequelize.STRING,
                 allowNull: false,
             },
             filename: {
@@ -26,7 +40,7 @@ module.exports = class Assignment extends Sequelize.Model{
             submittedOn: {
                 type: Sequelize.DATE,
                 allowNull: true,
-                defaultValue: Sequelize.fn('now'),
+                // defaultValue: Sequelize.fn('now'),
             },
         }, {
             sequelize,
@@ -51,6 +65,12 @@ module.exports = class Assignment extends Sequelize.Model{
         db.Assignment.belongsTo(db.User, {
             foreignKey: 'uploader',
             targetKey: 'email',
+        });
+        // 이벤트:과제 = 1:1
+        db.Assignment.belongsTo(db.Event, {
+            foreignKey: 'eventId',
+            sourceKey: 'id',
+            onDelete: 'cascade',
         });
     }
 };

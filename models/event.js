@@ -75,5 +75,10 @@ module.exports = class Event extends Sequelize.Model{
             sourceKey: 'id',
             onDelete: 'cascade',
         });
+		db.Event.hasOne(db.Assignment, {
+            foreignKey: 'eventId',
+            sourceKey: 'id',
+            onDelete: 'cascade',
+        });
 	}
 };

@@ -29,8 +29,13 @@ exports.createEvent = async (req, res, next) => {
 			// return event.id
 		}
 
-		// 일정이 스터디인 경우 -> 출석부 미입력 행 생성
+		// 일정이 스터디인 경우
 		if (event_type === '0') {
+			// await StudyLog.create({
+			// 	groupId: group.groupId,
+			// 	log: event.id,
+			// });
+
 			console.log('att part');
 			const members = await group.getUsers({ attributes: ['email'] });
 
@@ -39,9 +44,11 @@ exports.createEvent = async (req, res, next) => {
 				where: { groupPublicId: gpId }
 			})
 
-			console.log('members: ', members);
-			// members에 leader 추가
-			members.push(leader);
+			const leaderObj = await User.findOne({
+				where: { email: leader.dataValues.groupLeader }
+			})
+
+			members.push(leaderObj);
 
 			await Promise.all(members.map(async (member) => {
 				const now = new Date();
@@ -52,6 +59,37 @@ exports.createEvent = async (req, res, next) => {
 					eventId: event.id,
 					attendState: 2,
 					enterDate: now,
+				});
+			}));
+		}
+
+		// 일정이 과제함인 경우
+		else if (event_type === '1') {
+
+			const members = await group.getUsers({ attributes: ['email'] });
+
+			const leader = await StudyGroup.findOne({
+				attributes: ['groupLeader'],
+				where: { groupPublicId: gpId }
+			})
+
+			const leaderObj = await User.findOne({
+				where: { email: leader.dataValues.groupLeader }
+			})
+
+			members.push(leaderObj);
+
+			console.log("멤버 전체 : ", members)
+
+			await Promise.all(members.map(async (member) => {
+				console.log("이건 멤버 이메일: ", member.email)
+				const memberId = member.email;
+				await Assignment.create({
+					uploader: memberId,
+					eventId: event.id,
+					attendState: 2,
+					boxId: boxId,
+					submittedOn: null,
 				});
 			}));
 		}
@@ -104,13 +142,13 @@ exports.EventCalc = async (req, res, next) => {
 					event_type: '1'
 				}],
 			},
-			include: [{  
+			include: [{
 				model: AssignmentBox,
 				include: [{ model: Assignment }],
-			},{
+			}, {
 				// 진서지수진서지수진서지수
 				model: Attendance,
-			}], 
+			}],
 		});
 
 		return res.json(events);
