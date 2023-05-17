@@ -521,14 +521,14 @@ exports.attendanceCalc = async (req, res, next) => {
 
 			let item = new Object();
 
-			const summary = await Attendance.findAll({ where: { groupId: group.groupId, email: memberId } });
+			const data = await Attendance.findAll({ where: { groupId: group.groupId, email: memberId } });
 			const studyLateCnt = await Attendance.count({ where: { groupId: group.groupId, email: memberId, attendState: { [Op.eq]: 1 } } });
 			const studyAbsentCnt = await Attendance.count({ where: { groupId: group.groupId, email: memberId, attendState: { [Op.eq]: -1 } } });
 		
 
 			item.email = memberId;
 			item.nick = memberNick.userNick;
-			item.summary = summary;
+			item.summary = new Array(data);
 			item.studyLateCnt = studyLateCnt;
 			item.studyLateFee = studyLateCnt * rule.lateFee;
 			item.studyAbsentCnt = studyAbsentCnt
