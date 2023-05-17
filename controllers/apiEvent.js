@@ -19,22 +19,28 @@ exports.createEvent = async (req, res, next) => {
 			boxId: boxId,
 		});
 
-		// 일정이 스터디인 경우 -> 스터디 로그 생성
-		if (event_type === '0') {
-			// console.log('log: ', event.id);
-			await StudyLog.create({
-				groupId: group.groupId,
-				log: event.id,
-			});
-			// return event.id
-		}
 
 		// 일정이 스터디인 경우
 		if (event_type === '0') {
-			// await StudyLog.create({
-			// 	groupId: group.groupId,
-			// 	log: event.id,
-			// });
+			const content = `
+##### 스터디 일자
+
+
+#### 스터디 주제
+
+
+#### 오늘의 진행 상황
+
+
+#### 다음 스터디까지 할 일
+
+`;
+
+			await StudyLog.create({
+				groupId: group.groupId,
+				log: event.id,
+				content: content,
+			});
 
 			console.log('att part');
 			const members = await group.getUsers({ attributes: ['email'] });
@@ -65,24 +71,17 @@ exports.createEvent = async (req, res, next) => {
 
 		// 일정이 과제함인 경우
 		else if (event_type === '1') {
-
 			const members = await group.getUsers({ attributes: ['email'] });
-
 			const leader = await StudyGroup.findOne({
 				attributes: ['groupLeader'],
 				where: { groupPublicId: gpId }
 			})
-
 			const leaderObj = await User.findOne({
 				where: { email: leader.dataValues.groupLeader }
 			})
-
-			members.push(leaderObj);
-
-			console.log("멤버 전체 : ", members)
+			members.push(leaderObj);	// 멤버 목록에 리더 추가
 
 			await Promise.all(members.map(async (member) => {
-				console.log("이건 멤버 이메일: ", member.email)
 				const memberId = member.email;
 				await Assignment.create({
 					uploader: memberId,
@@ -128,27 +127,13 @@ exports.getEvent = async (req, res, next) => {
 };
 
 
-exports.EventCalc = async (req, res, next) => {
+exports.getEventTitle = async (req, res, next) => {
 	try {
-		const gpId = req.params.gpId;
-		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
-
+		const groupPublicId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId } });
 		const events = await Event.findAll({
-			where: {
-				groupId: group.groupId,
-				[Op.or]: [{
-					event_type: '0'
-				}, {
-					event_type: '1'
-				}],
-			},
-			include: [{
-				model: AssignmentBox,
-				include: [{ model: Assignment }],
-			}, {
-				// 진서지수진서지수진서지수
-				model: Attendance,
-			}],
+			where: { groupId: group.groupId, event_type: { [Op.eq]: 0 } },
+			attributes: ['id', 'event_title', 'date_start']
 		});
 
 		return res.json(events);

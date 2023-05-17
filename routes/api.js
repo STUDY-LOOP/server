@@ -35,11 +35,13 @@ const {
 	studyOneAssignment,
   createAttendance,
 	checkAttendance,
+	assignmentCalc,
+	attendanceCalc,
 } = require('../controllers/apiStudyGroup');
 const {
 	getEvent,
-	EventCalc,
 	getMeetInfo,
+	getEventTitle,
 	createEvent,
 } = require('../controllers/apiEvent');
 
@@ -99,16 +101,16 @@ router.get('/study/all', findAll);
 // GET /api/:gpId/info (스터디 정보 조회)
 router.get('/:gpId/info', studyInfo);
 
-// GET /api/:gpId/member (특정 스터디원 정보 조회)
+// GET /api/:gpId/member (특정 스터디의 멤버 전체 조회)
 router.get('/:gpId/member', studyMemberInfo);
 
 // GET /api/:gpId/assignment (특정 스터디 전체 과제 조회)
 router.get('/:gpId/assignment', studyAssignment);
 
-// GET /api/:gpId/:boxId (특정 스터디 특정 과제 조회)
+// GET /api/:boxId (특정 스터디 특정 과제 조회)
 router.get('/:boxId', studyOneAssignment);
 
-// GET /api/:gpId/assignment (특정 스터디 전체 출석 조회)
+// GET /api/:gpId/attendance (특정 스터디 전체 출석 조회)
 router.get('/:gpId/attendance', studyAttendance);
 
 // GET /api/:gpId/:boxId (특정 사용자 정보 조회)
@@ -121,9 +123,14 @@ router.get('/user/:email/assignment/:boxId', userAssignment);
 // GET /api/:log (스터디 회의록 조회)
 router.get('/log/:log', studyLog);
 
-// GET /api/search/:keyword
+// GET /api/search/:keyword (검색 결과 조회)
 router.get('/search/:keyword', searchResult);
 
+// GET /api/attendance/:gpId (출석 결과 조회)
+router.get('/attendance/:gpId', attendanceCalc);
+
+// GET /api/assignment/:gpId (과제 결과 조회)
+router.get('/assignment/:gpId', assignmentCalc);
 
 
 /* --- API(스터디) --- */
@@ -139,7 +146,6 @@ router.post('/group/member', joinGroup);
 
 // DELETE /api/member (스터디 탈퇴)
 router.delete('/member', quit);
-
 
 
 /* --- API(과제) --- */
@@ -163,8 +169,8 @@ router.post('/assignmentBox', createBox);
 // GET /api/:gpid/event (이벤트 정보 가져오기)
 router.get('/:gpId/event', getEvent);
 
-// GET /api/:gpId/event/calc (벌금 계산용 이벤트 - 스터디, 과제)
-router.get('/:gpId/event/calc', EventCalc);
+// GET /api/:gpid/event (이벤트 이름 가져오기)
+router.get('/:gpId/event/title', getEventTitle);
 
 // GET /api/event/:log (특정 회의 정보 가져오기)
 router.get('/event/:log', getMeetInfo);

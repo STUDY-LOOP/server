@@ -54,11 +54,11 @@ exports.create = async (req, res, next) => {
 		});
 		await StudyType.create({
 			groupId,
-			interest0, 
-			interest1, 
-			interest2, 
-			interest3, 
-			interest4, 
+			interest0,
+			interest1,
+			interest2,
+			interest3,
+			interest4,
 			interest5,
 		})
 	} catch (error) {
@@ -69,78 +69,78 @@ exports.create = async (req, res, next) => {
 
 // 스터디 정보 수정
 exports.update = async (req, res, next) => {
-  const groupPublicId = req.params.gpId;
+	const groupPublicId = req.params.gpId;
 
-  const group = await StudyGroup.findOne({
-    where: { groupPublicId: groupPublicId },
-    attributes: ['groupId']
-  });
+	const group = await StudyGroup.findOne({
+		where: { groupPublicId: groupPublicId },
+		attributes: ['groupId']
+	});
 
-  const groupId = group.groupId;
-  const updatedValue = req.body;
+	const groupId = group.groupId;
+	const updatedValue = req.body;
 
-  const key = Object.keys(updatedValue);
+	const key = Object.keys(updatedValue);
 
-  Object.keys(updatedValue).forEach(async (key) => {
-    switch (key) {
-      case 'groupDescription':
-        await StudyGroup.update({
-          groupDescription: updatedValue[key],
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'scheduleDay':
-        await StudySchedule.update({
-          scheduleDay: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'scheduleTime':
-        await StudySchedule.update({
-          scheduleTime: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'rule':
-        await StudyRule.update({
-          rule: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'lateTime':
-        await StudyRule.update({
-          lateTime: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'lateFee':
-        await StudyRule.update({
-          lateFee: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'absentTime':
-        await StudyRule.update({
-          absentTime: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-      case 'absentFee':
-        await StudyRule.update({
-          absentFee: updatedValue[key]
-        }, {
-          where: { groupId: groupId }
-        });
-        break;
-    }
-  });
+	Object.keys(updatedValue).forEach(async (key) => {
+		switch (key) {
+			case 'groupDescription':
+				await StudyGroup.update({
+					groupDescription: updatedValue[key],
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'scheduleDay':
+				await StudySchedule.update({
+					scheduleDay: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'scheduleTime':
+				await StudySchedule.update({
+					scheduleTime: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'rule':
+				await StudyRule.update({
+					rule: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'lateTime':
+				await StudyRule.update({
+					lateTime: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'lateFee':
+				await StudyRule.update({
+					lateFee: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'absentTime':
+				await StudyRule.update({
+					absentTime: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+			case 'absentFee':
+				await StudyRule.update({
+					absentFee: updatedValue[key]
+				}, {
+					where: { groupId: groupId }
+				});
+				break;
+		}
+	});
 
 };
 
@@ -260,14 +260,14 @@ exports.createBox = async (req, res, next) => {
 	try {
 		const { gpId, log, title, content, deadline } = req.body;
 		const boxId = uuidv4();
-		const group_dev = await StudyGroup.findOne({
+		const group = await StudyGroup.findOne({
 			where: { groupPublicId: gpId },
 		});
 
-		await StudyLog.findOrCreate({ where: { groupId: group_dev.groupId, log } });
+		await StudyLog.findOrCreate({ where: { groupId: group.groupId, log: log } });
 
 		await AssignmentBox.create({
-			groupId: group_dev.groupId,
+			groupId: group.groupId,
 			log: parseInt(log),
 			boxId,
 			title,
@@ -303,12 +303,37 @@ exports.submitAssignment = async (req, res, next) => {
 		const filename = `${req.file.filename}`;
 		const fileOrigin = `${req.file.originalname}`;
 
-		await Assignment.create({
-			boxId,
-			uploader,
-			filename,
-			fileOrigin,
+		const time = await AssignmentBox.findOne({
+			where: { boxId: boxId },
+			attributes: ['deadline']
 		});
+
+		const deadline = new Date(time.dataValues.deadline);
+		const now = new Date();
+		let state;
+
+		if (now <= deadline) state = 0;
+		else if (now > deadline) state = 1;
+
+		const eventId = await Event.findOne({
+			where: { boxId: boxId },
+			attributes: ['id'],
+		});
+
+		await Assignment.update({
+			filename: filename,
+			fileOrigin: fileOrigin,
+			submittedOn: now,
+			submitState: state,
+		}, {
+			where: {
+				boxId: boxId,
+				uploader: uploader,
+				eventId: eventId.dataValues.id,
+			}
+		});
+
+		return true;
 	} catch (error) {
 		console.error(error);
 		return next(error);
@@ -364,6 +389,7 @@ exports.studyOneAssignment = async (req, res, next) => {
 						'fileOrigin',
 						'linkData',
 						'submittedOn',
+						'submitState',
 					],
 					include: [{ model: User, attributes: ['userNick'] }],
 					order: [['submittedOn', 'ASC']],
@@ -381,36 +407,36 @@ exports.studyOneAssignment = async (req, res, next) => {
 
 // 출석 생성
 exports.createAttendance = async (req, res, next) => {
-  console.log('create api run');
-  try {
-    const gpId = req.params.gpId;
-    const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
-    const groupId = group.groupId;
+	console.log('create api run');
+	try {
+		const gpId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
+		const groupId = group.groupId;
 
-    const eventId = req.params.meetId;
+		const eventId = req.params.meetId;
 
-    const members = await StudyMember.findAll({
-      attributes: ['userId'],
-      where: {
-        StudyGroupGroupId: groupId
-      },
-      include: [{
-        model: User,
-        attributes: ['email']
-      }]
-    })
+		const members = await StudyMember.findAll({
+			attributes: ['userId'],
+			where: {
+				StudyGroupGroupId: groupId
+			},
+			include: [{
+				model: User,
+				attributes: ['email']
+			}]
+		})
 
-    const leader = await StudyGroup.findOne({
-      attributes: ['groupLeader'],
-      where: {
-        groupId: groupId
-      }
-    })
+		const leader = await StudyGroup.findOne({
+			attributes: ['groupLeader'],
+			where: {
+				groupId: groupId
+			}
+		})
 
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
 };
 
 // 출석 체크
@@ -422,14 +448,14 @@ exports.checkAttendance = async (req, res, next) => {
 
 		const eventId = req.params.meetId;
 
-    const { email, enterDate } = req.body;
+		const { email, enterDate } = req.body;
 
-    const event = await Event.findOne({
-      attributes: ['date_start'],
-      where: {
-        id: eventId,
-      },
-    });
+		const event = await Event.findOne({
+			attributes: ['date_start'],
+			where: {
+				id: eventId,
+			},
+		});
 
 		const dateE = new Date(enterDate);
 		const dateM = new Date(event.date_start);
@@ -437,35 +463,151 @@ exports.checkAttendance = async (req, res, next) => {
 		var attendState = -1; // 결석
 		const late = (dateE - dateM) / 1000 / 60;
 
-    if (late <= 5) {
-      attendState = 0; // 출석
-      console.log('출석');
-    } else if (late < 16) {
-      // 5 < late < 16
-      attendState = 1; // 지각
-      console.log('지각');
-    } else {
-      attendState = -1;
-    }
+		if (late <= 5) {
+			attendState = 0; // 출석
+			console.log('출석');
+		} else if (late < 16) {
+			// 5 < late < 16
+			attendState = 1; // 지각
+			console.log('지각');
+		} else {
+			attendState = -1;
+		}
 
-    await Attendance.update(
-        {
-          email: email,
-          groupId: groupId,
-          eventId: eventId,
-          enterDate: enterDate,
-          attendState: attendState
-        },
-        {
-          where: {
-            email: email,
-            eventId: eventId
-          }
-        }
-      )
+		await Attendance.update(
+			{
+				email: email,
+				groupId: groupId,
+				eventId: eventId,
+				enterDate: enterDate,
+				attendState: attendState
+			},
+			{
+				where: {
+					email: email,
+					eventId: eventId
+				}
+			}
+		)
 
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
+
+// 출석 결과 조회, 벌금 계산
+exports.attendanceCalc = async (req, res, next) => {
+	try {
+		const gpId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
+
+		const members = await group.getUsers({ attributes: ['email'] });
+		const leader = await StudyGroup.findOne({
+			attributes: ['groupLeader'],
+			where: { groupPublicId: gpId }
+		})
+		const leaderObj = await User.findOne({
+			where: { email: leader.dataValues.groupLeader },
+		})
+		members.push(leaderObj);
+
+		let arrItems = new Array();
+		const rule = await StudyRule.findOne({ where: { groupId: group.groupId } });
+
+		await Promise.all(members.map(async (member) => {
+			const memberId = member.email;
+			const memberNick = await User.findOne({ where: { email: memberId } });
+
+			let item = new Object();
+
+			const summary = await Attendance.findAll({ where: { groupId: group.groupId, email: memberId } });
+			const studyLateCnt = await Attendance.count({ where: { groupId: group.groupId, email: memberId, attendState: { [Op.eq]: 1 } } });
+			const studyAbsentCnt = await Attendance.count({ where: { groupId: group.groupId, email: memberId, attendState: { [Op.eq]: -1 } } });
+		
+
+			item.email = memberId;
+			item.nick = memberNick.userNick;
+			item.summary = summary;
+			item.studyLateCnt = studyLateCnt;
+			item.studyLateFee = studyLateCnt * rule.lateFee;
+			item.studyAbsentCnt = studyAbsentCnt
+			item.studyAbsentFee = studyAbsentCnt * rule.absentFee;;
+			item.totalFee = studyLateCnt * rule.lateFee + studyAbsentCnt * rule.absentFee;
+
+			arrItems.push(item);
+		}));
+		return res.json(arrItems);
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
+};
+
+// 과제 결과 조회, 벌금 계산
+exports.assignmentCalc = async (req, res, next) => {
+	try {
+		const gpId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
+
+		const members = await group.getUsers({ attributes: ['email'] });
+		const leader = await StudyGroup.findOne({
+			attributes: ['groupLeader'],
+			where: { groupPublicId: gpId }
+		})
+		const leaderObj = await User.findOne({
+			where: { email: leader.dataValues.groupLeader },
+		})
+		members.push(leaderObj);
+
+		let arrItems = new Array();
+		const rule = await StudyRule.findOne({ where: { groupId: group.groupId } });
+
+		await Promise.all(members.map(async (member) => {
+			const memberId = member.email;
+			const memberNick = await User.findOne({ where: { email: memberId } });
+
+			let item = new Object();
+
+			const data = await Assignment.findAll({ 
+				where: { uploader: memberId },
+				include: [{
+					model: AssignmentBox,
+					where: { groupId: group.groupId }
+				}],
+			});
+
+
+			const asgmtLateCnt = await Assignment.count({
+				where: { uploader: memberId, submitState: { [Op.eq]: 1 } },
+				include: [{
+					model: AssignmentBox,
+					where: { groupId: group.groupId }
+				}],
+			});
+			const asgmtAbsentCnt = await Assignment.count({
+				where: { uploader: memberId, submitState: { [Op.eq]: -1 } },
+				include: [{
+					model: AssignmentBox,
+					where: { groupId: group.groupId }
+				}],
+			});			
+
+			item.email = memberId;
+			item.nick = memberNick.userNick;
+			item.summary = new Array(data);
+			item.asgmtLateFee = asgmtLateCnt * rule.lateFee;
+			item.asgmtLateCnt = asgmtLateCnt
+			item.asgmtAbsentFee = asgmtAbsentCnt * rule.absentFee;
+			item.asgmtAbsentCnt = asgmtAbsentCnt
+			item.totalFee = asgmtLateCnt * rule.lateFee + asgmtAbsentCnt * rule.absentFee;
+
+			arrItems.push(item);
+		}));
+
+		return res.json(arrItems);
+	} catch (error) {
+		console.error(error);
+		return next(error);
+	}
 };
