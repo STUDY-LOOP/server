@@ -19,18 +19,29 @@ exports.createEvent = async (req, res, next) => {
 			boxId: boxId,
 		});
 
-		// 일정이 스터디인 경우 -> 스터디 로그 생성
+
+		// 일정이 스터디인 경우
 		if (event_type === '0') {
-			// console.log('log: ', event.id);
+			const content = `
+##### 스터디 일자
+
+
+#### 스터디 주제
+
+
+#### 오늘의 진행 상황
+
+
+#### 다음 스터디까지 할 일
+
+`;
+
 			await StudyLog.create({
 				groupId: group.groupId,
 				log: event.id,
+				content: content,
 			});
-			// return event.id
-		}
 
-		// 일정이 스터디인 경우 -> 출석부 미입력 행 생성
-		if (event_type === '0') {
 			console.log('att part');
 			const members = await group.getUsers({ attributes: ['email'] });
 
@@ -39,9 +50,11 @@ exports.createEvent = async (req, res, next) => {
 				where: { groupPublicId: gpId }
 			})
 
-			console.log('members: ', members);
-			// members에 leader 추가
-			members.push(leader);
+			const leaderObj = await User.findOne({
+				where: { email: leader.dataValues.groupLeader }
+			})
+
+			members.push(leaderObj);
 
 			await Promise.all(members.map(async (member) => {
 				const now = new Date();
@@ -52,6 +65,30 @@ exports.createEvent = async (req, res, next) => {
 					eventId: event.id,
 					attendState: 2,
 					enterDate: now,
+				});
+			}));
+		}
+
+		// 일정이 과제함인 경우
+		else if (event_type === '1') {
+			const members = await group.getUsers({ attributes: ['email'] });
+			const leader = await StudyGroup.findOne({
+				attributes: ['groupLeader'],
+				where: { groupPublicId: gpId }
+			})
+			const leaderObj = await User.findOne({
+				where: { email: leader.dataValues.groupLeader }
+			})
+			members.push(leaderObj);	// 멤버 목록에 리더 추가
+
+			await Promise.all(members.map(async (member) => {
+				const memberId = member.email;
+				await Assignment.create({
+					uploader: memberId,
+					eventId: event.id,
+					attendState: 2,
+					boxId: boxId,
+					submittedOn: null,
 				});
 			}));
 		}
@@ -90,27 +127,13 @@ exports.getEvent = async (req, res, next) => {
 };
 
 
-exports.EventCalc = async (req, res, next) => {
+exports.getEventTitle = async (req, res, next) => {
 	try {
-		const gpId = req.params.gpId;
-		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
-
+		const groupPublicId = req.params.gpId;
+		const group = await StudyGroup.findOne({ where: { groupPublicId } });
 		const events = await Event.findAll({
-			where: {
-				groupId: group.groupId,
-				[Op.or]: [{
-					event_type: '0'
-				}, {
-					event_type: '1'
-				}],
-			},
-			include: [{  
-				model: AssignmentBox,
-				include: [{ model: Assignment }],
-			},{
-				// 진서지수진서지수진서지수
-				model: Attendance,
-			}], 
+			where: { groupId: group.groupId, event_type: { [Op.eq]: 0 } },
+			attributes: ['id', 'event_title', 'date_start']
 		});
 
 		return res.json(events);
