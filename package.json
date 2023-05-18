@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "nodemon app",
+    "build": "babel src -d build"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,8 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.8",
     "localtunnel": "^2.0.2",
     "nodemon": "^2.0.20"
   }
