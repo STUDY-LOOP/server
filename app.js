@@ -59,7 +59,11 @@ sequelize
 app.use(
   cors({
     credentials: true,
-    origin: true, //'http://localhost:3001',
+    origin: [
+      'http://43.201.202.121',
+      'http://ec2-43-201-202-121.ap-northeast-2.compute.amazonaws.com',
+      'http://localhost:3001',
+    ],
   })
 );
 
