@@ -48,7 +48,6 @@ exports.studyInfo = async (req, res, next) => {
 				{ model: User, attributes: ['userNick'] }
 			],
 		});
-		console.log(group);
 		res.json(group);
 
 	} catch (error) {
@@ -132,7 +131,6 @@ exports.studyAttendance = async (req, res, next) => {
 			}],
 			group: ['Attendance.email'],
 		})
-		console.log(attendance);
 
 		res.json(attendance);
 

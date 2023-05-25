@@ -27,8 +27,6 @@ exports.join = async (req, res, next) => {
 
 exports.userInterest = async (req, res, next) => {
 	const { email, interest0, interest1, interest2, interest3, interest4, interest5 } = req.body;
-
-	console.log(email, interest0, interest1, interest2, interest3, interest4, interest5)
 	
 	try {
 		await UserInterest.create({

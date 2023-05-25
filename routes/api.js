@@ -11,14 +11,14 @@ const {
 	studyInfo,
 	studyMemberInfo,
 	studyAssignment,
-  studyAttendance,
+	studyAttendance,
 	userInfo,
 	userAsLeader,
 	userAsMember,
 	userAllAssignment,
 	userAssignment,
 	studyLog,
-  editStudyLog,
+	editStudyLog,
 	getMeetId,
 	getAttendance,
 	searchResult,
@@ -27,13 +27,14 @@ const {
 	create,
 	joinGroup,
 	quit,
-  update,
+	update,
+	remove,
 	createBox,
 	submitAssignment,
 	getAssignment,
 	deleteAssignment,
 	studyOneAssignment,
-  createAttendance,
+	createAttendance,
 	checkAttendance,
 	assignmentCalc,
 	attendanceCalc,
@@ -146,6 +147,9 @@ router.post('/group/member', joinGroup);
 
 // DELETE /api/member (스터디 탈퇴)
 router.delete('/member', quit);
+
+// DELETE /api/remove/:gpId (스터디 삭제)
+router.post('/remove/:gpId', remove);
 
 
 /* --- API(과제) --- */

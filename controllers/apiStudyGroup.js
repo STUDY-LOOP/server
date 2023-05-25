@@ -237,16 +237,9 @@ exports.modify = async (req, res, next) => {
 // 스터디 삭제
 exports.remove = async (req, res, next) => {
 	try {
-		const groupPublicId = req.body.gpId;
-		const values = groupPublicId.split('=');
-
-		await StudyGroup.destroy({
-			where: {
-				groupName: values[0],
-				groupId: { [Op.like]: values[1] + '%' },
-			},
-		});
-		return res.redirect('/');
+		const gpId = req.params.gpId;
+		await StudyGroup.destroy({ where: { groupPublicId: gpId} });
+		return true;
 	} catch (error) {
 		console.error(error);
 		return next(error);
@@ -264,11 +257,13 @@ exports.createBox = async (req, res, next) => {
 			where: { groupPublicId: gpId },
 		});
 
-		await StudyLog.findOrCreate({ where: { groupId: group.groupId, log: log } });
+		// await StudyLog.findOrCreate({ where: { groupId: group.groupId, log: log } });
 
 		await AssignmentBox.create({
 			groupId: group.groupId,
-			log: parseInt(log),
+			/////// 로그 삭제
+			// log: parseInt(log),
+			log: null,
 			boxId,
 			title,
 			content,
@@ -356,17 +351,27 @@ exports.getAssignment = async (req, res, next) => {
 
 // 과제 삭제
 exports.deleteAssignment = async (req, res, next) => {
+	console.log("과제 삭제")
 	const { filename, gpId } = req.body;
 	const filepath = `${__dirname}\\..\\public\\uploads\\${filename}`;
 	try {
 		// db에서 관련 데이터 삭제
-		await Assignment.destroy({ where: { filename } });
+		await Assignment.update(
+			{ 
+				submitState: 2,
+				filename: null,
+				fileOrigin: null,
+				linkDate: null,
+				submittedOn: null,
+			},
+			{ where: { filename } }
+		)
 		// 실제 파일 삭제
 		fs.unlink(filepath, (err) => {
 			if (err) throw err;
 		});
 
-		return res.redirect(`/study-group/${gpId}/assignment`);
+		return true;
 	} catch (error) {
 		console.error(error);
 		return next(error);
