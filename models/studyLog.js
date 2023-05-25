@@ -3,6 +3,11 @@ const Sequelize = require('sequelize');
 module.exports = class StudyLog extends Sequelize.Model{
     static init(sequelize){
         return super.init({
+            id: {
+				type : Sequelize.INTEGER,
+				primaryKey : true,
+				autoIncrement : true
+			},
             groupId: {
                 type: Sequelize.STRING,
                 allowNull: false,
@@ -10,7 +15,6 @@ module.exports = class StudyLog extends Sequelize.Model{
             log: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                primaryKey: true,
             },
             content: {
                 type: Sequelize.TEXT,
@@ -35,11 +39,11 @@ module.exports = class StudyLog extends Sequelize.Model{
             targetKey: 'groupId',
             onDelete: 'cascade',
         });
-        db.StudyLog.hasMany(db.Assignment, {
-            foreignKey: 'groupId',
-            sourceKey: 'groupId',
-            onDelete: 'cascade',
-        });
+        // db.StudyLog.hasMany(db.Assignment, {
+        //     foreignKey: 'groupId',
+        //     sourceKey: 'groupId',
+        //     onDelete: 'cascade',
+        // });
         db.StudyLog.belongsTo(db.Event, {
             foreignKey: 'log',
             sourceKey: 'id',

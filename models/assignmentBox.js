@@ -3,13 +3,19 @@ const Sequelize = require('sequelize');
 module.exports = class AssignmentBox extends Sequelize.Model{
     static init(sequelize){
         return super.init({
+            // id: {
+			// 	type : Sequelize.INTEGER,
+			// 	primaryKey : true,
+			// 	autoIncrement : true,
+			// },
             groupId: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
+            /////// 로그 삭제
             log: {
                 type: Sequelize.INTEGER,
-                allowNull: false,
+                allowNull: true,
             },
             boxId: {
                 type: Sequelize.STRING,
@@ -47,12 +53,13 @@ module.exports = class AssignmentBox extends Sequelize.Model{
             sourceKey: 'groupId',
             onDelete: 'cascade',
         });
+        /////// 로그 삭제
         // foreignKey: 스터디 세부내역 log
-        db.AssignmentBox.belongsTo(db.StudyLog, {
-            foreignKey: 'log',
-            sourceKey: 'log',
-            onDelete: 'cascade',
-        });
+        // db.AssignmentBox.belongsTo(db.StudyLog, {
+        //     foreignKey: 'log',
+        //     sourceKey: 'log',
+        //     onDelete: 'cascade',
+        // });
         db.AssignmentBox.hasMany(db.Assignment, {
             foreignKey: 'boxId',
             sourceKey: 'boxId',
