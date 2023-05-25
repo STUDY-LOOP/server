@@ -30,6 +30,8 @@ const io = require('socket.io')(httpServer, {
     allowedHeaders: ['*'],
     credentials: true,
   },
+  'pingTimeout': 180000,
+  'pingInterval': 25000, 
 });
 const peerServer = ExpressPeerServer(httpServer, {
   debug: true,
@@ -106,6 +108,7 @@ const userPageRouter = require('./routes/userPage');
 const studyGroupRouter = require('./routes/studyGroup');
 const studyGroupPageRouter = require('./routes/studyGroupPage');
 const eventsRouter = require('./routes/events');
+const { doesNotMatch } = require('assert');
 
 app.get('/', (req, res, next) => {
   return;
@@ -152,23 +155,24 @@ io.on('connection', (socket) => {
     //done();
   });
 
-  let room, id, name;
   //video chat
-  socket.on('join-room', (roomId, userId, userName) => {
-    room = roomId;
-    id = userId;
-    name = userName;
-
+  // 새로운 peer의 연결 수신
+  socket.on('join-room', (roomId, userId, userName, streamId) => {
+    // room에 접속
     socket.join(roomId);
-    socket.to(roomId).emit('new-user-connected', { id: id, name: name });
+    // 같은 방 다른 peer들에게 emit
+    socket.to(roomId).emit('new-user-connected', { id: userId, name: userName });
+    console.log('new-user-connected');
+
+    socket.on('disconnect', async () => {
+      console.log('disconn 실행', roomId, userId);
+      socket.broadcast.to(roomId).emit('user-disconnected', userId, streamId);
+      socket.to(roomId).emit('update-video', { id: userId });
+    }); 
   });
+
   //chat
   socket.on('new-message', (sender, content, datetime, roomId) => {
     io.to(roomId).emit('new-message', sender, content, datetime);
   });
-
-  /* socket.on('disconnect', (roomId, userId, userName) => {
-    socket.to(roomId).emit('user-disconnected', userId);
-    socket.to(roomId).emit('update-video', { id: userId, name: userName });
-  }); */
 });
