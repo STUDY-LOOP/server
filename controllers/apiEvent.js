@@ -1,13 +1,33 @@
 const { User, StudyGroup, Event, StudyLog, AssignmentBox, Assignment, Attendance } = require('../models');
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const { v4: uuidv4 } = require('uuid');
 
 exports.createEvent = async (req, res, next) => {
 	try {
 		console.log(req.body);
-		const { gpId, event_title, event_type, date_start, date_end, event_des, event_color, boxId } = req.body;
+		const { gpId, event_title, event_type, date_start, date_end, event_des, event_color } = req.body;
 		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
+		let boxId = null;
 
+		if (event_type === '1') {
+			boxId = uuidv4();
+
+			// 과제함 생성
+			const { title, content, deadline } = req.body;
+			await AssignmentBox.create({
+				groupId: group.groupId,
+				/////// 로그 삭제
+				// log: parseInt(log),
+				log: null,
+				boxId,
+				title,
+				content,
+				deadline,
+			});
+		}
+
+		// 이벤트 생성
 		const event = await Event.create({
 			groupId: group.groupId,
 			event_title: event_title,
@@ -71,6 +91,8 @@ exports.createEvent = async (req, res, next) => {
 
 		// 일정이 과제함인 경우
 		else if (event_type === '1') {
+
+			// 과제 row 생성
 			const members = await group.getUsers({ attributes: ['email'] });
 			const leader = await StudyGroup.findOne({
 				attributes: ['groupLeader'],

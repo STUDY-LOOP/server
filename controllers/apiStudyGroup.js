@@ -19,7 +19,7 @@ const Op = Sequelize.Op;
 
 /* --- 스터디 기본 --- */
 
-// 스터디 생성
+// 스터디 생성 -> 사용 X (apiEvent.js의 createEvent로 병합)
 exports.create = async (req, res, next) => {
 	const {
 		groupName, groupDescription, rule,
@@ -248,7 +248,7 @@ exports.remove = async (req, res, next) => {
 
 /* --- 과제함 --- */
 
-// 과제함 생성
+// 과제함 생성 -> 사용 안 함
 exports.createBox = async (req, res, next) => {
 	try {
 		const { gpId, log, title, content, deadline } = req.body;
