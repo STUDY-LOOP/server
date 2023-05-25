@@ -62,7 +62,7 @@ app.use(
   cors({
     credentials: true,
     origin: [
-      'http://43.201.202.121',
+      'http://43.201.202.121:3001',,
       'http://ec2-43-201-202-121.ap-northeast-2.compute.amazonaws.com',
       'http://localhost:3001',
     ],

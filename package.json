@@ -1,7 +1,7 @@
 {
   "name": "studywithme",
   "version": "1.0.0",
-  "description": "",
+  "description": "수정",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app",
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/capstone-design-cse/studyWithMe.git"
   },
-  "author": "",
+  "author": "capstone-12",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/capstone-design-cse/studyWithMe/issues"
@@ -33,6 +33,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "nunjucks": "^3.2.3",
+    "package.json": "^2.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
