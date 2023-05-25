@@ -503,6 +503,7 @@ exports.attendanceCalc = async (req, res, next) => {
 		const group = await StudyGroup.findOne({ where: { groupPublicId: gpId } });
 
 		const members = await group.getUsers({ attributes: ['email'] });
+
 		const leader = await StudyGroup.findOne({
 			attributes: ['groupLeader'],
 			where: { groupPublicId: gpId }

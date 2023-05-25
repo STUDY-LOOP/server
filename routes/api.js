@@ -201,8 +201,8 @@ router.get('/:gpId/notice', apiChat.loadNotice);
 // GET /api/:gpId/meet (특정 회의 조회)
 router.get('/:gpId/meet', getMeetId);
 
-// GET /api/attendance/:log (특정 회의 출석 조회)
-router.get('/attendance/:log', getAttendance);
+// GET /api/meet-attendance/:log (특정 회의 출석 조회)
+router.get('/meet-attendance/:log', getAttendance);
 
 // POST /api/:gpId/create-attendance/:meetId (출석 생성)
 router.post('/:gpId/create-attendance/:meetId', createAttendance);

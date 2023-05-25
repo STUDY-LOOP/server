@@ -303,7 +303,7 @@ exports.getMeetId = async (req, res, next) => {
 				}
 			},
 		});
-		// console.log(meet);
+
 		return res.json(meet);
 	} catch (error) {
 		return next(error);
@@ -314,10 +314,9 @@ exports.getMeetId = async (req, res, next) => {
 exports.getAttendance = async (req, res, next) => {
 	try {
 		const meetId = req.params.log;
-
+		
 		// 출석 정보 조회 
 		const attendance = await Attendance.findAll({
-			raw: true,
 			attributes: ['email', 'attendState'],
 			where: {
 				eventId: meetId,
@@ -325,10 +324,8 @@ exports.getAttendance = async (req, res, next) => {
 			include: [{
 				model: User,
 				attributes: ['userNick'],
-				required: false,
 			}]
 		});
-
 		return res.json(attendance);
 
 	} catch (error) {
@@ -359,16 +356,6 @@ exports.searchResult = async (req, res, next) => {
 					groupDescription: { [Op.like]: "%" + keyword + "%" },
 				}],
 			},
-			// include: [{
-			// 	model: StudyType,
-			// 	where: {
-			// 		[Sequelize.Op.or]: [{
-			// 			interest0: true
-			// 		}, {
-			// 			groupDescription: { [Op.like]: "%" + keyword + "%" },
-			// 		}],
-			// 	}
-			// }]	
 		});
 
 		return res.json(result);
