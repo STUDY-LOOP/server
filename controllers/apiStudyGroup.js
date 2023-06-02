@@ -179,8 +179,6 @@ exports.quit = async (req, res, next) => {
 			where: {
 				StudyGroupGroupId: group.groupId,
 				UserId: user.id,
-				// 나중에 '나만 탈퇴하기 기능' 추가되면 아래 코드로 수정
-				//email: string(req.session.passport.user),
 			},
 		});
 	} catch (error) {
@@ -211,7 +209,6 @@ exports.modify = async (req, res, next) => {
 		});
 		const groupId = group.groupId;
 
-		///////////////////// 심플하게 수정 필요
 		await StudyGroup.update(
 			{ groupId, groupName, groupLeader },
 			{ where: { groupId: group.groupId } }
@@ -224,7 +221,6 @@ exports.modify = async (req, res, next) => {
 			{ groupId, scheduleDay, scheduleHour, scheduleMinute },
 			{ where: { groupId: group.groupId } }
 		);
-		//////////////// 스케줄 여러개인 경우에 어떡하지?
 
 		const newGPId = func.toPublicId(groupName, groupId);
 		return res.redirect(`/study-group/${newGPId}`);
@@ -257,12 +253,8 @@ exports.createBox = async (req, res, next) => {
 			where: { groupPublicId: gpId },
 		});
 
-		// await StudyLog.findOrCreate({ where: { groupId: group.groupId, log: log } });
-
 		await AssignmentBox.create({
 			groupId: group.groupId,
-			/////// 로그 삭제
-			// log: parseInt(log),
 			log: null,
 			boxId,
 			title,

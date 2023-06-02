@@ -39,11 +39,6 @@ module.exports = class StudyLog extends Sequelize.Model{
             targetKey: 'groupId',
             onDelete: 'cascade',
         });
-        // db.StudyLog.hasMany(db.Assignment, {
-        //     foreignKey: 'groupId',
-        //     sourceKey: 'groupId',
-        //     onDelete: 'cascade',
-        // });
         db.StudyLog.belongsTo(db.Event, {
             foreignKey: 'log',
             sourceKey: 'id',

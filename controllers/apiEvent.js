@@ -17,8 +17,6 @@ exports.createEvent = async (req, res, next) => {
 			const { title, content, deadline } = req.body;
 			await AssignmentBox.create({
 				groupId: group.groupId,
-				/////// 로그 삭제
-				// log: parseInt(log),
 				log: null,
 				boxId,
 				title,

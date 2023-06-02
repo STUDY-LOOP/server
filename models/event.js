@@ -27,12 +27,10 @@ module.exports = class Event extends Sequelize.Model{
 			date_start: {
 				type: Sequelize.DATE, //YYYY-MM-DDTHH:MM:SSZ
 				allowNull: true,
-				//defaultValue: Sequelize.NOW,
 			},
 			date_end: {
 				type: Sequelize.DATE,
 				allowNull: true,
-				//defaultValue: Sequelize.NOW,
 			},
 			event_des: {
 				type: Sequelize.STRING(100),

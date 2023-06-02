@@ -48,7 +48,7 @@ const {
 
 const apiChat = require('../controllers/apiChat');
 const apiUser = require('../controllers/apiUser');
-const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
+const { isLoggedIn, isNotLoggedIn } = require('../SSR/middlewares');
 
 /* --- multer setting --- */
 try {

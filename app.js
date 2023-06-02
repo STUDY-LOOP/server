@@ -100,27 +100,14 @@ app.use('/peerjs', peerServer);
 /* --- router --- */
 
 const apiRouter = require('./routes/api');
-//const apiEventsRouter = require('./routes/apiEvents');
-const pageRouter = require('./routes/page');
-const authRouter = require('./routes/auth');
-const userRouter = require('./routes/user');
-const userPageRouter = require('./routes/userPage');
-const studyGroupRouter = require('./routes/studyGroup');
-const studyGroupPageRouter = require('./routes/studyGroupPage');
-const eventsRouter = require('./routes/events');
+
 const { doesNotMatch } = require('assert');
 
 app.get('/', (req, res, next) => {
   return;
 });
 app.use('/api', apiRouter);
-//app.use('/apiEvents', apiEventsRouter);
-app.use('/events', eventsRouter);
-app.use('/auth', authRouter);
-app.use('/user', userRouter);
-app.use('/my', userPageRouter);
-app.use('/group', studyGroupRouter);
-app.use('/study-group', studyGroupPageRouter);
+
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
@@ -135,6 +122,7 @@ app.use((err, req, res, next) => {
   res.render('error');
 });
 
+
 /* --- chat, video chat --- */
 
 io.on('connection', (socket) => {
@@ -147,7 +135,6 @@ io.on('connection', (socket) => {
 
   socket.on('new_msg', (userNick, content, datetime, room) => {
     io.to(room).emit('new_msg', userNick, content, datetime);
-    //done(); //triggers function located at frontend
   });
 
   socket.on('new_notice', (userNick, content, datetime, room) => {

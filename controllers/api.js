@@ -341,7 +341,6 @@ exports.searchResult = async (req, res, next) => {
 
 		for (i=0; i<6; i++) {
 			flag[i] = types[i].includes(keyword)
-
 			// interest #(flag의 true 인덱스) == true
 		}
 

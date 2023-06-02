@@ -10,7 +10,6 @@ exports.loadChat = async (req, res, next) => {
       raw: true,
       where: { groupId: group.groupId, notice: 0 },
       attributes: [
-        //chatId는 모르겠다
         'userNick',
         'notice',
         'content',
@@ -33,7 +32,6 @@ exports.loadNotice = async (req, res, next) => {
       raw: true,
       where: { groupId: group.groupId, notice: 1 },
       attributes: [
-        //chatId는 모르겠다
         'userNick',
         'notice',
         'content',
